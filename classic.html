@@ -1,0 +1,1043 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Data and AI Maturity Assessment</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --purple:#9747EF; --purple-light:#C49BF4; --orange:#FA5F09;
+    --grad:linear-gradient(118deg,#9747EF 0%,#B94FB0 48%,#FA5F09 100%);
+    --grad-2:linear-gradient(120deg,#9747EF,#FA5F09);
+    --accent:#9747EF; --accent-deep:#8038d8; --accent-2:#FA5F09;
+    --bg:#13101E; --bg-deep:#0C0916;
+    --surface:#1B1530; --surface-2:#241C3C; --surface-3:#2E2550;
+    --line:rgba(255,255,255,.08); --line-2:rgba(255,255,255,.16);
+    --ink:#F3EFFA; --muted:#A89FC6; --faint:#766C95;
+    --chip:rgba(151,71,239,.16); --chip-ink:#CDB9F5; --hero-fg:#ffffff;
+    --good:#4ade80; --good-soft:rgba(74,222,128,.14);
+    --warn:#fbbf24; --warn-soft:rgba(251,191,36,.14);
+    --bad:#fb7185; --bad-soft:rgba(251,113,133,.16);
+    --display:'DM Serif Display', Georgia, serif;
+    --bodyfont:'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    --radius:18px; --radar-grid:rgba(255,255,255,.10); --radar-label:#A89FC6;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body { font-family: var(--bodyfont); background: var(--bg); color: var(--ink); line-height: 1.55; -webkit-font-smoothing: antialiased; position: relative; overflow-x: hidden; }
+  body::before { content:""; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    background: radial-gradient(62vw 52vh at 10% -10%, rgba(151,71,239,.22), transparent 60%),
+                radial-gradient(54vw 46vh at 112% 6%, rgba(250,95,9,.13), transparent 56%),
+                radial-gradient(50vw 60vh at 50% 120%, rgba(151,71,239,.10), transparent 60%); }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 36px 20px 96px; position: relative; z-index: 1; }
+  .center-wrap { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 28px; position: relative; z-index: 1; }
+  .hidden { display: none !important; }
+
+  .card { background: var(--surface); border: 1px solid var(--line); border-radius: 22px; box-shadow: 0 30px 70px -28px rgba(0,0,0,.7); }
+  .landing { width: 100%; max-width: 540px; padding: 48px 48px 36px; text-align: center; position: relative; overflow: hidden; }
+  .landing::before { content:""; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: var(--grad); }
+  .logo { width: 80px; height: 80px; border-radius: 20px; background: radial-gradient(circle at 32% 24%, rgba(151,71,239,.35), rgba(250,95,9,.12) 70%, transparent); border: 1px solid var(--line-2); display: inline-flex; align-items: center; justify-content: center; margin-bottom: 22px; }
+  .logo svg { width: 50px; height: 50px; }
+  h1 { font-family: var(--display); font-size: 2.35rem; font-weight: 400; margin: 0 0 12px; letter-spacing: -0.01em; line-height: 1.08; color: #fff; }
+  .wordmark { display:block; font-family: var(--bodyfont); font-size: 0.7rem; font-weight: 600; letter-spacing: .3em; text-transform: uppercase; color: var(--purple-light); margin-bottom: 14px; }
+  .sub { color: var(--muted); font-size: 1.02rem; margin: 0 auto 30px; max-width: 400px; line-height: 1.6; }
+  .field { text-align: left; margin-bottom: 16px; }
+  .field.row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .field label { display: block; font-weight: 600; font-size: 0.82rem; letter-spacing: .02em; margin-bottom: 8px; color: var(--ink); }
+  .field label .req { color: var(--orange); }
+  .field label .opt { color: var(--faint); font-weight: 500; }
+  input[type=text], select { width: 100%; padding: 14px 15px; font-size: 0.97rem; border: 1px solid var(--line-2); border-radius: 12px; background: rgba(255,255,255,.04); color: var(--ink); font-family: inherit; transition: border-color .15s, box-shadow .15s, background .15s; }
+  input[type=text]::placeholder { color: var(--faint); }
+  select { -webkit-appearance: none; appearance: none; background-image: linear-gradient(45deg,transparent 50%,var(--muted) 50%),linear-gradient(135deg,var(--muted) 50%,transparent 50%); background-position: calc(100% - 18px) 20px, calc(100% - 13px) 20px; background-size: 5px 5px, 5px 5px; background-repeat: no-repeat; }
+  select option { background: #1B1530; color: var(--ink); }
+  input[type=text]:focus, select:focus { outline: none; border-color: var(--purple); background: rgba(151,71,239,.08); box-shadow: 0 0 0 3px rgba(151,71,239,.22); }
+  .btn { width: 100%; padding: 15px; font-size: 0.97rem; font-weight: 600; border-radius: 12px; border: 1px solid transparent; cursor: pointer; font-family: inherit; transition: transform .08s, box-shadow .15s, filter .15s, background .15s; }
+  .btn:active { transform: translateY(1px); }
+  .btn-primary { background: var(--grad-2); color: #fff; box-shadow: 0 12px 30px -10px rgba(151,71,239,.65); }
+  .btn-primary:hover { filter: brightness(1.07); transform: translateY(-1px); }
+  .btn-ghost { background: rgba(255,255,255,.04); color: var(--ink); border-color: var(--line-2); margin-top: 11px; }
+  .btn-ghost:hover { background: rgba(255,255,255,.08); }
+  .divider { height: 1px; background: var(--line); margin: 26px 0 18px; }
+  .powered { color: var(--muted); font-size: 0.8rem; letter-spacing: .02em; }
+  .powered b { color: var(--purple-light); font-weight: 600; }
+  .err { color: var(--bad); font-size: 0.82rem; margin-top: 6px; display: none; }
+
+  /* wizard */
+  .wiz-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 10px; }
+  .wiz-org { font-weight: 700; font-size: 1.02rem; color: #fff; }
+  .wiz-org small { display:block; color: var(--muted); font-weight: 500; font-size: .78rem; margin-top: 3px; letter-spacing: .02em; }
+  .wiz-count { color: var(--purple-light); font-size: 0.78rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; white-space: nowrap; }
+  .progress { height: 6px; background: rgba(255,255,255,.08); border-radius: 999px; overflow: hidden; margin: 12px 0 30px; }
+  .progress > i { display: block; height: 100%; background: var(--grad-2); border-radius: 999px; transition: width .35s cubic-bezier(.4,0,.2,1); }
+  .q-card { padding: 38px 42px; position: relative; }
+  .q-theme { display:inline-block; font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: .12em; color: var(--chip-ink); background: var(--chip); padding: 7px 14px; border-radius: 999px; margin-bottom: 22px; }
+  .qblock { margin-bottom: 30px; }
+  .qblock + .qblock { border-top: 1px solid var(--line); padding-top: 28px; }
+  .q-text { font-family: var(--display); font-size: 1.5rem; font-weight: 400; letter-spacing: -0.01em; line-height: 1.22; margin: 0 0 8px; color: #fff; }
+  .q-why { color: var(--muted); margin: 0 0 20px; font-size: 0.94rem; line-height: 1.55; }
+  .options { display: flex; flex-direction: column; gap: 10px; }
+  .opt-btn { text-align: left; border: 1px solid var(--line); background: rgba(255,255,255,.03); border-radius: 14px; padding: 14px 16px; cursor: pointer; display: flex; gap: 14px; align-items: flex-start; font-family: inherit; transition: border-color .14s, background .14s, transform .14s; }
+  .opt-btn:hover { border-color: var(--line-2); background: rgba(255,255,255,.06); transform: translateX(3px); }
+  .opt-btn.sel { border-color: var(--purple); background: rgba(151,71,239,.16); box-shadow: 0 0 0 1px var(--purple), 0 10px 30px -14px rgba(151,71,239,.7); }
+  .opt-lv { flex: 0 0 auto; width: 30px; height: 30px; border-radius: 9px; background: rgba(255,255,255,.07); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: .9rem; color: var(--purple-light); transition: background .14s, color .14s; }
+  .opt-btn.sel .opt-lv { background: var(--grad-2); color: #fff; }
+  .opt-body { font-size: 0.94rem; color: var(--muted); line-height: 1.5; }
+  .opt-btn.sel .opt-body { color: var(--ink); }
+  .opt-body b { font-weight: 600; color: var(--ink); }
+  .target-row { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; margin-top: 16px; padding: 14px 16px; background: rgba(255,255,255,.03); border: 1px solid var(--line); border-radius: 14px; }
+  .target-row .tlabel { font-size: 0.84rem; font-weight: 600; color: var(--ink); }
+  .target-row .thint { font-size: 0.77rem; color: var(--faint); flex-basis: 100%; }
+  .tbtns { display: flex; gap: 7px; }
+  .tbtn { width: 36px; height: 36px; border-radius: 10px; border: 1px solid var(--line-2); background: rgba(255,255,255,.03); font-weight: 700; cursor: pointer; color: var(--muted); font-family: inherit; transition: border-color .14s, background .14s, color .14s; }
+  .tbtn:hover:not(:disabled) { border-color: var(--orange); color: var(--ink); }
+  .tbtn.sel { background: var(--orange); border-color: var(--orange); color: #fff; box-shadow: 0 8px 20px -8px rgba(250,95,9,.7); }
+  .tbtn:disabled { opacity: .3; cursor: not-allowed; }
+  .wiz-nav { display: flex; justify-content: space-between; margin-top: 28px; gap: 12px; }
+  .wiz-nav .btn { width: auto; padding: 13px 28px; }
+  .btn-back { background: rgba(255,255,255,.04); border-color: var(--line-2); color: var(--ink); }
+  .btn-back:hover:not(:disabled) { background: rgba(255,255,255,.08); }
+  .btn-back:disabled { opacity: .35; cursor: not-allowed; }
+  .btn-next:disabled { opacity: .5; cursor: not-allowed; box-shadow: none; }
+
+  /* results */
+  .res-top { display: flex; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; gap: 16px; margin-bottom: 6px; }
+  .res-title { font-family: var(--display); font-size: 1.85rem; font-weight: 400; margin: 0; letter-spacing: -0.01em; line-height: 1.15; color: #fff; max-width: 640px; }
+  .res-org { color: var(--muted); margin: 6px 0 0; font-size: .92rem; letter-spacing: .02em; }
+  .res-actions { display: flex; gap: 9px; flex-wrap: wrap; align-items: center; }
+  .res-actions .btn { width: auto; padding: 11px 17px; font-size: .86rem; }
+  .icon-btn { display: inline-flex; align-items: center; gap: 8px; }
+  .icon-btn svg { width: 16px; height: 16px; }
+  .btn-icon { display: inline-flex; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: 12px; border: 1px solid var(--line-2); background: rgba(255,255,255,.04); color: var(--ink); cursor: pointer; transition: background .14s, border-color .14s; }
+  .btn-icon:hover { background: rgba(255,255,255,.09); border-color: var(--purple); color: var(--purple-light); }
+  .btn-icon svg { width: 19px; height: 19px; }
+  .grid { display: grid; gap: 18px; }
+  .tiles { grid-template-columns: repeat(4, 1fr); margin-top: 20px; }
+  .panel { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 24px 26px; box-shadow: 0 20px 50px -30px rgba(0,0,0,.7); }
+  .panel h3 { margin: 0 0 4px; font-size: 1.05rem; font-weight: 600; color: #fff; }
+  .panel .psub { color: var(--muted); font-size: .87rem; margin: 0 0 18px; line-height: 1.55; }
+  .tile { text-align: left; }
+  .tile .t-lab { font-size: .72rem; font-weight: 600; text-transform: uppercase; letter-spacing: .1em; color: var(--muted); }
+  .tile .t-now { font-family: var(--display); font-size: 2.5rem; font-weight: 400; line-height: 1.05; letter-spacing: -0.01em; margin-top: 6px; color: #fff; }
+  .tile .t-now small { font-size: 1rem; font-weight: 600; color: var(--faint); font-family: var(--bodyfont); }
+  .tile .t-arrow { font-size: .82rem; color: var(--muted); margin-top: 6px; }
+  .tile .t-arrow b { color: var(--purple-light); font-weight: 600; }
+  .tile.hero { background: var(--grad); border: none; box-shadow: 0 24px 60px -24px rgba(151,71,239,.6); }
+  .tile.hero .t-lab { color: rgba(255,255,255,.82); }
+  .tile.hero .t-now { color: #fff; }
+  .tile.hero .t-now small { color: rgba(255,255,255,.7); }
+  .tile.hero .t-arrow { color: rgba(255,255,255,.85); }
+  .tile.hero .t-arrow b { color: #fff; }
+  .level-pill { display:inline-block; margin-top: 10px; background: rgba(255,255,255,.2); padding: 6px 13px; border-radius: 999px; font-weight: 600; font-size: .78rem; color: #fff; }
+
+  .section-label { font-family: var(--display); font-size: 1.3rem; font-weight: 400; margin: 36px 0 16px; letter-spacing: -0.01em; color: #fff; }
+  .two-col { display: grid; grid-template-columns: 1.05fr .95fr; gap: 22px; align-items: center; }
+
+  .legend { display: flex; gap: 20px; font-size: .82rem; margin-top: 10px; color: var(--muted); }
+  .legend i { display:inline-block; width: 14px; height: 14px; border-radius: 4px; margin-right: 7px; vertical-align: -2px; }
+  .legend .now i { background: var(--purple); }
+  .legend .tar i { background: transparent; border: 2px solid var(--orange); }
+
+  table { width: 100%; border-collapse: collapse; font-size: .9rem; }
+  th, td { text-align: left; padding: 12px 9px; border-bottom: 1px solid var(--line); }
+  th { font-size: .72rem; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); font-weight: 600; }
+  td { color: var(--ink); }
+  td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+  tr.flat td { color: var(--faint); }
+  .gap { font-weight: 700; }
+  .gap.big { color: var(--orange); }
+  .gap.mid { color: var(--warn); }
+  .gap.none { color: var(--faint); font-weight: 600; }
+  .focuspill { display:inline-block; padding: 4px 11px; border-radius: 999px; font-size: .73rem; font-weight: 600; }
+  .focuspill.yes { background: rgba(250,95,9,.16); color: #ffb38a; }
+  .focuspill.watch { background: var(--warn-soft); color: var(--warn); }
+  .focuspill.no { background: rgba(255,255,255,.06); color: var(--faint); }
+
+  .veq { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 12px; }
+  .veq-card { border: 1px solid var(--line); border-radius: 14px; padding: 16px; background: var(--surface-2); }
+  .veq-card.intel { border-top: 3px solid var(--purple); }
+  .veq-card.data { border-top: 3px solid var(--orange); }
+  .veq-term { font-weight: 600; font-size: .92rem; color: #fff; }
+  .veq-desc { font-size: .76rem; color: var(--muted); margin: 3px 0 12px; }
+  .veq-bar { height: 8px; background: rgba(255,255,255,.07); border-radius: 999px; position: relative; margin-bottom: 7px; }
+  .veq-now { position: absolute; left:0; top:0; height: 100%; border-radius: 999px; background: var(--purple); }
+  .veq-tar { position: absolute; top: -3px; width: 3px; height: 14px; border-radius: 2px; background: var(--orange); }
+  .veq-card.data .veq-now { background: var(--orange); }
+  .veq-card.data .veq-tar { background: var(--purple-light); }
+  .veq-vals { font-size: .8rem; font-weight: 600; color: var(--ink); }
+  .veq-vals span { color: var(--muted); font-weight: 400; }
+  .veq-eq { text-align:center; font-family: var(--display); font-size: 1.2rem; font-weight: 400; margin: 4px 0 18px; color: var(--ink); line-height: 1.4; }
+  .veq-eq b { color: var(--purple-light); font-weight: 400; } .veq-eq u { text-decoration: none; color: var(--orange); }
+  .forces { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin: 6px 0 18px; }
+  .force { border: 1px solid var(--line); border-radius: 16px; padding: 18px 18px 20px; position: relative; background: var(--surface-2); }
+  .force.weak { border-color: rgba(251,113,133,.5); background: var(--bad-soft); }
+  .force .f-name { font-weight: 600; font-size: .95rem; color: #fff; }
+  .force .f-score { font-family: var(--display); font-size: 2.2rem; font-weight: 400; line-height: 1.1; letter-spacing: -0.01em; color: #fff; margin-top: 4px; }
+  .force .f-score small { font-size: .82rem; color: var(--faint); font-weight: 600; font-family: var(--bodyfont); }
+  .force .f-tag { position: absolute; top: 16px; right: 16px; font-size: .64rem; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: #ffb0bd; }
+  .force .f-bar { height: 8px; background: rgba(255,255,255,.07); border-radius: 999px; position: relative; margin-top: 12px; }
+  .force .f-now { position: absolute; left: 0; top: 0; height: 100%; border-radius: 999px; background: var(--grad-2); }
+  .force .f-tar { position: absolute; top: -4px; width: 3px; height: 16px; background: var(--purple-light); border-radius: 2px; }
+  .verdict { font-size: 1.02rem; line-height: 1.65; background: rgba(151,71,239,.12); border: 1px solid rgba(151,71,239,.32); border-radius: 16px; padding: 18px 20px; margin-bottom: 16px; color: var(--ink); }
+  .verdict b { color: #fff; font-weight: 600; }
+  .veq-detail-lab { font-size: .8rem; font-weight: 500; color: var(--muted); margin: 6px 0 10px; }
+
+  ul.ticks { list-style: none; margin: 10px 0 0; padding: 0; }
+  ul.ticks li { display: flex; gap: 10px; align-items: flex-start; margin-bottom: 9px; font-size: .92rem; color: var(--ink); }
+  ul.ticks li svg { flex: 0 0 auto; margin-top: 3px; }
+
+  .toast { position: fixed; bottom: 26px; left: 50%; transform: translateX(-50%); background: var(--surface-3); color:#fff; border: 1px solid var(--line-2); padding: 12px 22px; border-radius: 999px; font-size: .88rem; font-weight: 500; opacity: 0; pointer-events: none; transition: opacity .2s; z-index: 50; box-shadow: 0 16px 40px -12px rgba(0,0,0,.7); }
+  .toast.show { opacity: 1; }
+  .footnote { color: var(--faint); font-size: .79rem; margin-top: 30px; text-align: center; line-height: 1.6; }
+
+  @media (max-width: 860px) {
+    .tiles { grid-template-columns: 1fr 1fr; }
+    .two-col, .forces { grid-template-columns: 1fr; }
+    .veq { grid-template-columns: 1fr 1fr; }
+    .field.row2 { grid-template-columns: 1fr; }
+    .q-card { padding: 28px 22px; }
+    .landing { padding: 38px 28px; }
+    h1 { font-size: 2rem; }
+  }
+  @media print {
+    :root { --bg:#fff; --surface:#fff; --surface-2:#faf8fd; --surface-3:#f3eefb;
+      --ink:#16121f; --muted:#5b5470; --faint:#8a82a0; --line:rgba(0,0,0,.12); --line-2:rgba(0,0,0,.22);
+      --chip:#efe6fd; --chip-ink:#6b28c4; --purple-light:#7a33c9; --radar-grid:rgba(0,0,0,.14); --radar-label:#5b5470; }
+    body { background:#fff; } body::before { display:none; }
+    .panel,.card,.q-card { box-shadow:none; } .res-actions { display:none; }
+    h1,.q-text,.res-title,.section-label,.panel h3,.tile .t-now,.force .f-name,.force .f-score,.veq-term { color:#16121f; }
+  }
+
+  /* ---- wizard theme chip icon ---- */
+  .q-theme { display: inline-flex; align-items: center; gap: 8px; }
+  .q-theme svg { width: 15px; height: 15px; }
+
+  /* ---- per-theme note ---- */
+  .note-block { margin-top: 4px; }
+  .note-label { display: block; font-size: .82rem; font-weight: 600; color: var(--muted); margin-bottom: 8px; }
+  .note-label span { color: var(--faint); font-weight: 500; }
+  .note-input { width: 100%; min-height: 62px; resize: vertical; padding: 12px 14px; font-family: inherit; font-size: .92rem; color: var(--ink); background: rgba(255,255,255,.03); border: 1px solid var(--line-2); border-radius: 12px; line-height: 1.5; }
+  .note-input::placeholder { color: var(--faint); }
+  .note-input:focus { outline: none; border-color: var(--purple); background: rgba(151,71,239,.08); box-shadow: 0 0 0 3px rgba(151,71,239,.20); }
+
+  /* ---- wave tags + comments ---- */
+  .wavetag { display: inline-block; padding: 3px 9px; border-radius: 999px; font-size: .7rem; font-weight: 700; letter-spacing: .02em; white-space: nowrap; }
+  .wavetag.w1 { background: rgba(250,95,9,.16); color: #ffb38a; }
+  .wavetag.w2 { background: rgba(151,71,239,.18); color: var(--purple-light); }
+  .wavetag.w3 { background: rgba(255,255,255,.08); color: var(--muted); }
+  .note-row { padding: 12px 0; border-bottom: 1px solid var(--line); }
+  .note-row:last-child { border-bottom: none; }
+  .note-theme { font-weight: 600; font-size: .85rem; color: var(--purple-light); margin-bottom: 3px; }
+  .note-text { color: var(--ink); font-size: .92rem; line-height: 1.55; white-space: pre-wrap; }
+  .rec-i { display: inline-flex; align-items: center; justify-content: center; width: 20px; height: 20px; padding: 0; margin-left: 7px; border-radius: 50%; border: 1px solid var(--line-2); background: transparent; color: var(--muted); cursor: pointer; vertical-align: middle; transition: border-color .14s, color .14s, background .14s; }
+  .rec-i svg { width: 13px; height: 13px; }
+  .rec-i:hover { border-color: var(--purple); color: var(--purple-light); background: rgba(151,71,239,.12); }
+  .rec-pop { position: absolute; z-index: 60; max-width: 320px; width: max-content; background: var(--surface-3); border: 1px solid var(--line-2); border-radius: 14px; padding: 14px 16px; box-shadow: 0 18px 44px -12px rgba(0,0,0,.75); }
+  .rec-pop .rec-head { display: flex; align-items: center; gap: 8px; font-weight: 600; font-size: .9rem; color: #fff; margin-bottom: 8px; }
+  .rec-pop .rec-body { font-size: .87rem; line-height: 1.55; color: var(--ink); }
+  .verdict-next { margin-top: 13px; padding-top: 13px; border-top: 1px solid rgba(151,71,239,.3); font-size: .95rem; line-height: 1.6; }
+  .verdict-next .vn-lab { display: inline-block; font-size: .64rem; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: #fff; background: var(--grad-2); padding: 3px 9px; border-radius: 999px; margin-right: 8px; vertical-align: 1px; }
+  ol.nextsteps { list-style: none; margin: 0; padding: 0; }
+  ol.nextsteps li { padding: 15px 0; border-bottom: 1px solid var(--line); }
+  ol.nextsteps li:last-child { border-bottom: none; padding-bottom: 2px; }
+  .ns-top { display: flex; align-items: center; gap: 11px; margin-bottom: 7px; flex-wrap: wrap; }
+  .ns-num { width: 26px; height: 26px; border-radius: 50%; background: var(--grad-2); color: #fff; font-weight: 700; font-size: .82rem; display: flex; align-items: center; justify-content: center; flex: 0 0 auto; }
+  .ns-name { font-weight: 600; color: #fff; font-size: .98rem; }
+  .ns-rec { color: var(--muted); font-size: .9rem; line-height: 1.55; padding-left: 37px; }
+  .roadmap { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .road-stage { background: var(--surface-2); border: 1px solid var(--line); border-radius: 16px; padding: 18px; }
+  .road-stage-head { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+  .road-badge { width: 32px; height: 32px; border-radius: 10px; background: var(--grad-2); color: #fff; font-weight: 700; display: flex; align-items: center; justify-content: center; flex: 0 0 auto; font-family: var(--display); font-size: 1.05rem; }
+  .road-wave { font-size: .66rem; text-transform: uppercase; letter-spacing: .1em; color: var(--purple-light); font-weight: 600; }
+  .road-name { font-weight: 600; color: #fff; font-size: .96rem; }
+  .road-chips { display: flex; flex-direction: column; gap: 8px; }
+  .road-chip { display: flex; align-items: center; justify-content: space-between; gap: 10px; width: 100%; text-align: left; padding: 10px 12px; border: 1px solid var(--line); border-left: 3px solid var(--line-2); border-radius: 10px; background: rgba(255,255,255,.03); color: var(--ink); cursor: pointer; font-family: inherit; font-size: .85rem; transition: background .14s, border-color .14s; }
+  .road-chip:hover { background: rgba(255,255,255,.07); }
+  .road-chip.low { border-left-color: var(--orange); }
+  .road-chip.mid { border-left-color: var(--warn); }
+  .road-chip.ok { border-left-color: var(--good); }
+  .rc-name { font-weight: 500; }
+  .rc-score { font-variant-numeric: tabular-nums; color: var(--muted); font-weight: 700; flex: 0 0 auto; }
+  @media (max-width: 860px) { .roadmap { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+
+<!-- ============ LANDING / INTAKE ============ -->
+<section id="view-landing" class="center-wrap">
+  <div class="card landing">
+    <div class="logo">
+      <svg width="50" height="50" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="hlg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#9747EF"/><stop offset="1" stop-color="#FA5F09"/></linearGradient>
+          <linearGradient id="hlt" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#C49BF4"/><stop offset="1" stop-color="#FFFFFF"/></linearGradient>
+        </defs>
+        <polygon points="50,8 88,29 88,71 50,92 12,71 12,29" fill="none" stroke="url(#hlg)" stroke-width="3.5" stroke-linejoin="round"/>
+        <text x="50" y="60" text-anchor="middle" font-family="Georgia, serif" font-size="30" font-weight="bold" letter-spacing="-1" fill="url(#hlt)">AR</text>
+      </svg>
+    </div>
+    <span class="wordmark" id="wordmark">Arielle Rolland Advisory</span>
+    <h1>Data and AI Maturity Assessment</h1>
+    <p class="sub">A short, internal check of where your team stands today, and where you want to be, across data and AI. Ten themes, about five minutes.</p>
+    <div class="field">
+      <label>Organisation name <span class="req">*</span></label>
+      <input type="text" id="org-name" placeholder="Enter your organisation name" autocomplete="off" />
+      <div class="err" id="org-err">Please enter your organisation name to begin.</div>
+    </div>
+    <div class="field row2">
+      <div>
+        <label>Department <span class="req">*</span></label>
+        <select id="dept">
+          <option value="">Choose one</option>
+          <option>Commercial or Sales</option>
+          <option>Marketing</option>
+          <option>Supply Chain or Operations</option>
+          <option>Manufacturing</option>
+          <option>Quality</option>
+          <option>Regulatory Affairs</option>
+          <option>R&amp;D or Clinical</option>
+          <option>Finance</option>
+          <option>HR or People</option>
+          <option>IT or Digital</option>
+          <option>Other</option>
+        </select>
+      </div>
+      <div>
+        <label>Your role <span class="req">*</span></label>
+        <input type="text" id="role" placeholder="e.g. Head of Quality" autocomplete="off" />
+      </div>
+    </div>
+    <div class="err" id="dr-err" style="margin-bottom:10px;">Please choose a department and enter your role.</div>
+    <button class="btn btn-primary" onclick="startAssessment()">Start assessment</button>
+    <button class="btn btn-ghost" onclick="showSample()">View sample report</button>
+    <div class="divider"></div>
+    <p class="powered" id="powered">Powered by <b>Arielle Rolland Advisory</b> &middot; Strategic Data &amp; AI Leadership</p>
+  </div>
+</section>
+
+<!-- ============ WIZARD ============ -->
+<section id="view-wizard" class="wrap hidden">
+  <div class="wiz-head">
+    <div class="wiz-org" id="wiz-org">Organisation<small id="wiz-meta"></small></div>
+    <div class="wiz-count" id="wiz-count">Theme 1 of 10</div>
+  </div>
+  <div class="progress"><i id="wiz-bar" style="width:5%"></i></div>
+
+  <div class="card q-card">
+    <span class="q-theme" id="q-theme">Theme</span>
+    <div id="q-main"></div>
+    <div id="q-sub"></div>
+    <div id="q-note"></div>
+  </div>
+
+  <div class="wiz-nav">
+    <button class="btn btn-back" id="btn-back" onclick="prevTheme()">&larr; Back</button>
+    <button class="btn btn-primary btn-next" id="btn-next" onclick="nextTheme()">Next &rarr;</button>
+  </div>
+</section>
+
+<!-- ============ RESULTS ============ -->
+<section id="view-results" class="wrap hidden">
+  <div class="res-top">
+    <div>
+      <h2 class="res-title">Data and AI maturity, where you are and where you want to be</h2>
+      <p class="res-org" id="res-org">Organisation</p>
+    </div>
+    <div class="res-actions">
+      <button class="btn btn-ghost icon-btn" onclick="window.print()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="M7 11l5 5 5-5"/><path d="M5 21h14"/></svg> Download</button>
+      <button class="btn-icon" onclick="goHome()" aria-label="Back to home" title="Back to home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M9 20v-6h6v6"/></svg></button>
+    </div>
+  </div>
+
+  <div class="grid tiles">
+    <div class="panel tile hero">
+      <div class="t-lab">Overall maturity</div>
+      <div class="t-now"><span id="r-now">0.0</span><small> / 5</small></div>
+      <div class="t-arrow">Target <b id="r-tar">0.0</b> &middot; gap <span id="r-gap">0.0</span></div>
+      <div class="level-pill" id="r-level">Level</div>
+    </div>
+    <div class="panel tile">
+      <div class="t-lab">Data readiness</div>
+      <div class="t-now"><span id="r-data-now">0.0</span><small> / 5</small></div>
+      <div class="t-arrow">Target <b id="r-data-tar">0.0</b></div>
+    </div>
+    <div class="panel tile">
+      <div class="t-lab">AI readiness</div>
+      <div class="t-now"><span id="r-ai-now">0.0</span><small> / 5</small></div>
+      <div class="t-arrow">Target <b id="r-ai-tar">0.0</b></div>
+    </div>
+    <div class="panel tile">
+      <div class="t-lab">Appetite to change</div>
+      <div class="t-now"><span id="r-appetite">0</span><small> themes</small></div>
+      <div class="t-arrow">have a real target gap</div>
+    </div>
+  </div>
+
+  <div class="section-label">Maturity across the ten themes</div>
+  <div class="panel two-col">
+    <div>
+      <h3>Today versus target</h3>
+      <p class="psub">Each axis is a theme, scored 1 to 5. The filled shape is where you are now. The outline is where you want to be. The space between them is your improvement agenda.</p>
+      <div class="legend">
+        <span class="now"><i></i>Where we are now</span>
+        <span class="tar"><i></i>Where we want to be</span>
+      </div>
+    </div>
+    <div id="r-radar"></div>
+  </div>
+
+  <div class="section-label">Where to focus, and in what order</div>
+  <div class="panel">
+    <p class="psub">Not everything can be a priority at once, so the order matters. The wave shows what should be in place first. Foundations come before AI, because AI only pays off on data people can trust. Within a wave, the gap you chose sets the order, and a weak foundation is flagged to address first even if you set a small target. Wave 1 is foundations (ownership, trustworthy data, reliable systems, security). Wave 2 makes data usable. Wave 3 scales AI.</p>
+    <table>
+      <thead><tr><th>Theme</th><th>Wave</th><th class="num">Today</th><th class="num">Target</th><th class="num">Gap</th><th>Recommended</th></tr></thead>
+      <tbody id="r-table"></tbody>
+    </table>
+  </div>
+
+  <div class="section-label">The value equation: where your value comes from</div>
+  <div class="panel">
+    <p class="veq-eq">value = <b>artificial intelligence + human intelligence</b> applied to <u>internal + external data</u></p>
+    <p class="psub" id="r-summary"></p>
+    <div class="forces" id="r-forces"></div>
+    <div class="verdict" id="r-verdict"></div>
+    <p class="veq-detail-lab">The four terms in detail. Filled bar is today, the marker is your target.</p>
+    <div class="veq" id="r-veq"></div>
+    <ul class="ticks" id="r-focuslist"></ul>
+  </div>
+
+  <div class="section-label">Recommended next steps</div>
+  <div class="panel"><ol class="nextsteps" id="r-nextsteps"></ol></div>
+
+  <div class="section-label">Your roadmap</div>
+  <div class="panel">
+    <p class="psub">The recommended sequence, left to right. Hover any theme to see what to put in place. The coloured edge shows how far each theme is from a solid, defined base, where orange needs the most attention.</p>
+    <div class="roadmap" id="r-roadmap"></div>
+  </div>
+
+  <div class="section-label hidden" id="r-notes-label">Comments by theme</div>
+  <div class="panel hidden" id="r-notes-panel"></div>
+
+  <p class="footnote">Internal assessment for one organisation. Scores reflect the views of the person completing it. Run it across departments and roles to compare perspectives.</p>
+</section>
+
+<div class="toast" id="toast">Link copied to clipboard</div>
+<div id="rec-pop" class="rec-pop hidden" onmouseenter="recKeep()" onmouseleave="recOut()"></div>
+
+<script>
+const LEVELS = ["Initial","Developing","Defined","Managed","Optimised"];
+const LEVEL_BLURB = {
+  1: "Mostly ad hoc and reactive. Foundations are not yet in place.",
+  2: "Some good practice is emerging, but it is inconsistent.",
+  3: "Documented and consistent. A solid, defined base to build on.",
+  4: "Measured and managed, with clear accountability and monitoring.",
+  5: "A continuous strength and a genuine source of advantage."
+};
+
+/* ---- 10 themes, each with a main question and a subquestion ---- */
+const THEMES = [
+  { key: "Ownership and direction",
+    main: { q: "Is it clear who is responsible for our important data, and do we have a plan for how we use it?",
+      why: "When no one owns the data, problems get ignored and teams argue over whose numbers are right.",
+      opts: [
+        "You spend ages chasing around to find who owns a piece of data, and often no one does.",
+        "You can sometimes track down an owner, but it depends who you ask and the answers conflict.",
+        "You know who to go to for the main types of data, and there are agreed rules to follow.",
+        "Owners are clearly accountable, and you can see how well the rules are being kept.",
+        "Good data ownership is just how things run here, and it visibly steers where the business invests." ] },
+    sub: { q: "When two reports disagree, do we have an agreed source that everyone trusts?",
+      why: "Without an agreed source of truth, meetings get hijacked by arguments over whose numbers are right.",
+      opts: [
+        "Two reports disagree and the meeting derails into arguing about whose number is right.",
+        "People have favourite sources, but nothing is official so the debates keep happening.",
+        "There is a named official source for the main numbers, and people actually use it.",
+        "The agreed source is reused everywhere, and nothing goes out the door without it.",
+        "Reports and AI pull from the trusted source automatically, so the numbers simply match." ] } },
+
+  { key: "Trustworthy data",
+    main: { q: "Can people trust that the numbers and records they work with are correct and complete?",
+      why: "Bad data leads to wrong decisions, rework, and reports that contradict each other.",
+      opts: [
+        "You only discover the data was wrong after it has already caused a problem.",
+        "Someone eyeballs the important data by hand, usually once something has gone wrong.",
+        "There is an agreed bar for what good data looks like, and it gets checked against it.",
+        "Data quality is measured and tracked, so you can see it getting better or worse.",
+        "Quality is checked automatically and most issues are caught and fixed before anyone notices." ] },
+    sub: { q: "Are our core records, like customers, products or suppliers, free of duplicates and matched across systems?",
+      why: "When the same customer or product exists several times across systems, work gets duplicated, things go to the wrong place, and counts are wrong.",
+      opts: [
+        "The same customer or product is entered many times in different systems, and nothing links them.",
+        "We clean up duplicates by hand, usually once they have caused a visible problem.",
+        "We have rules for spotting and merging duplicates, and someone keeps the core records tidy.",
+        "Core records are automatically matched and de-duplicated across systems, and kept accurate.",
+        "Every system draws on the same clean master set of core records, with no duplicates." ] } },
+
+  { key: "Systems and data",
+    main: { q: "Do our systems connect and move data between each other reliably?",
+      why: "If systems do not talk to each other, data gets re-keyed and rebuilt by hand, which is slow, costly and error prone.",
+      opts: [
+        "Our systems do not talk to each other, so data gets copied and re-keyed by hand between them.",
+        "A few systems are wired together, but the links are patchy and break with little warning.",
+        "There is an agreed way for systems to exchange data, used consistently, and we can see it flowing.",
+        "Data moves between systems automatically, and we watch reliability, cost and performance.",
+        "Systems exchange data seamlessly in near real time, and the flows mostly recover on their own." ] },
+    sub: { q: "Do we bring in and combine relevant outside data, such as market, partner and industry data, with our own?",
+      why: "Your own data only tells half the story. Outside data is what makes it comparable and forward looking.",
+      opts: [
+        "You work almost entirely from your own data and rarely see anything from outside.",
+        "Outside data comes in now and then, by hand, for a one off question.",
+        "There are agreed outside sources that are used regularly.",
+        "Outside data is brought in and combined with your own to sharpen decisions.",
+        "Your data and outside data flow together seamlessly and feed reporting and AI." ] } },
+
+  { key: "Find and reuse",
+    main: { q: "When someone has the data, can they understand what it means without asking around?",
+      why: "When no one can tell what a field means or where it came from, people misread it or give up and ask a colleague.",
+      opts: [
+        "There is no catalogue, so you cannot tell what data exists or what each field actually means.",
+        "A few glossaries or spreadsheets exist, but they are out of date as often as not.",
+        "There is a clear catalogue where you can browse the data and read a plain description of each item.",
+        "The catalogue stays current and shows where each piece of data came from and how it is defined.",
+        "People and AI instantly understand what any piece of data means and can trust its definition." ] },
+    sub: { q: "Do we build data once so it can be reused, or rebuild it from scratch for every project?",
+      why: "Rebuilding the same data again and again wastes money, and every team ends up with slightly different answers.",
+      opts: [
+        "Every project builds its data again from scratch, as a one off.",
+        "Some data gets reused, but the ownership and quality are hit and miss.",
+        "Key data is packaged so others can reuse it, with a clear owner.",
+        "Trusted, reusable data is easy to find and shared across the business.",
+        "Trusted data products are shared across the whole business and with partners." ] } },
+
+  { key: "Security and compliance",
+    main: { q: "Are we confident that the right people can see sensitive data, and the wrong people cannot?",
+      why: "A breach or a privacy slip can mean fines, lost trust, and serious damage to our reputation.",
+      opts: [
+        "Who can see what is loose and inconsistent, and you are never quite sure who has access.",
+        "People log in with passwords, and the most sensitive data has basic protection.",
+        "There are clear rules about who can see what, and they get checked.",
+        "Access is monitored and audited, and the risks are actively managed.",
+        "Access is watched in real time, with advanced privacy protection built in." ] },
+    sub: { q: "Can we show that we use data legally and ethically?",
+      why: "Getting this wrong can mean regulatory fines, legal action, and a serious hit to reputation.",
+      opts: [
+        "You only think about compliance when something forces you to.",
+        "You know the main rules but handle them one situation at a time.",
+        "You know which data is regulated and can show you follow the privacy rules.",
+        "Privacy and consent steps run automatically, and you watch for misuse.",
+        "You continuously monitor for legal and ethical risk and can evidence it on demand." ] } },
+
+  { key: "Insight and confidence",
+    main: { q: "Can people turn data into the answers they need to make decisions?",
+      why: "If turning data into an answer is slow or manual, decisions slow down and people fall back on gut feel.",
+      opts: [
+        "Turning data into an answer means stitching spreadsheets together by hand, and the numbers rarely agree.",
+        "There are some dashboards, but every team builds its own and they tell different stories.",
+        "People can self serve standard reports and answer their own questions without waiting.",
+        "We can see which insights get used and whether they actually change decisions.",
+        "Insight is built right into everyday decisions, and a lot of it surfaces automatically." ] },
+    sub: { q: "Are our people comfortable using data in their everyday decisions?",
+      why: "If only a handful of specialists can work with data, everyone else keeps guessing.",
+      opts: [
+        "Most calls are made on gut feel, and few people are at ease with data.",
+        "A handful of enthusiasts use data well, but the skills are very uneven.",
+        "Most people are comfortable with data and share a common language for it.",
+        "Skill levels are understood and matched to what each role needs.",
+        "Reaching for data is simply how everyone here makes decisions." ] } },
+
+  { key: "AI strategy and value",
+    main: { q: "Do we have an agreed plan for where AI should help the business, with someone senior responsible for it?",
+      why: "Without a clear plan and an owner, AI effort scatters across pilots that never add up to real value.",
+      opts: [
+        "There is no shared view of where AI should help, and no one is holding the agenda.",
+        "A few people have AI ideas, but there is no shared plan and no clear sponsor.",
+        "Where AI should help is written down, and a senior person is accountable for it.",
+        "The AI plan is tied to business goals and budgets, and leaders review the progress.",
+        "AI is part of how strategy is set each year, and the plan flexes as things change." ] },
+    sub: { q: "Can we point to measurable value that AI has delivered, and is it scaling?",
+      why: "Activity is not value. The test is whether AI moves real numbers, like cost, speed or quality, and whether that spreads.",
+      opts: [
+        "We cannot point to any measurable value from AI yet.",
+        "A pilot or two showed promise, but nothing has delivered value at scale.",
+        "A few AI uses deliver real, measurable value in their area.",
+        "We track the value AI delivers, and several uses have scaled beyond where they started.",
+        "AI delivers significant, measured value across the business and it compounds over time." ] } },
+
+  { key: "Governing AI",
+    main: { q: "When we use AI, can we trust and explain what it does, and stop it when it goes wrong?",
+      why: "AI that no one oversees can make biased or wrong decisions at scale, with legal and reputational fallout.",
+      opts: [
+        "AI gets used with no real oversight of how it was built or what it is doing.",
+        "Some of it is written down, but there are no firm controls.",
+        "Each AI tool has an owner, and a person signs it off before it goes live.",
+        "You can trace where AI answers come from, and they are backed by trusted sources.",
+        "AI runs within clear limits and shuts itself down if it drifts or shows bias." ] },
+    sub: { q: "Do we know which AI uses carry the most risk, and do we keep them safe and within the rules once live?",
+      why: "Some AI uses are higher risk and increasingly regulated, and being caught unprepared is costly.",
+      opts: [
+        "AI risk is not assessed, and tools are not checked once they are live.",
+        "Risk is weighed case by case, and live problems surface only when something goes wrong.",
+        "AI uses are sorted by risk, and live tools are checked from time to time.",
+        "Higher risk uses get extra oversight, and live AI is monitored for accuracy and fairness.",
+        "Risk, compliance and live monitoring are built in, and you keep pace with new regulation." ] } },
+
+  { key: "AI skills and adoption",
+    main: { q: "Do our people understand what AI can and cannot do, and are they confident using it in their work?",
+      why: "If people do not understand AI, they either avoid useful tools or trust them blindly, and both are costly.",
+      opts: [
+        "Most people are unsure what AI even is or how it could help them.",
+        "There is curiosity and some self taught use, but no real guidance or training.",
+        "Training is on offer, and people know the basics of what AI can and cannot do.",
+        "People across roles use AI with confidence and know when to question what it gives back.",
+        "Using AI well is a core skill here, kept sharp with ongoing coaching." ] },
+    sub: { q: "Is AI becoming a normal, supported part of how our people do their everyday work?",
+      why: "People can be skilled at AI yet still not use it. Value comes only when it is woven into the work.",
+      opts: [
+        "AI is not part of how people work, and nothing encourages them to try it.",
+        "A few enthusiasts use AI, but most people carry on exactly as before.",
+        "People are actively encouraged to use approved AI, with the how and why explained.",
+        "Many teams have changed how they work because of AI, with support to make the shift.",
+        "Using AI sensibly is just how work happens, and people keep finding new uses for it." ] } },
+
+  { key: "Process and agents",
+    main: { q: "Are our ways of working ready to embed AI, or do we need to redesign them for AI to be genuinely useful?",
+      why: "Bolting AI onto a broken or undocumented process just makes the mess run faster. The big gains come from rethinking the work.",
+      opts: [
+        "The processes are undocumented and inconsistent, so AI has nothing solid to plug into.",
+        "Some processes are written down, but the assumption is that AI will just slot into today's way of working.",
+        "The key processes are standard and documented, and you have spotted where AI could help.",
+        "Selected processes are being redesigned around what AI does well, rather than bolting it on.",
+        "How work gets done is continually reinvented, with AI and agents at the centre and people overseeing." ] },
+    sub: { q: "Can our processes be trusted to run with AI or agents making or recommending decisions?",
+      why: "Agentic AI can only be trusted on processes that are documented, controlled and auditable.",
+      opts: [
+        "Not really, the processes lean on people and on judgement that is never written down.",
+        "Rarely, a few steps are automated but with little control or audit trail.",
+        "For the defined processes there are clear rules, checks, and a record of what happened.",
+        "AI assists or recommends within agreed limits, and people approve the key steps.",
+        "Agents run routine processes end to end within guardrails, and people handle the exceptions." ] } }
+];
+
+const ICONS = [
+  '<circle cx="12" cy="12" r="9"/><path d="M15 9l-2.2 4.2L8.5 15l2.2-4.2z"/>',
+  '<path d="M12 3l7 3v5c0 4-3 7-7 8-4-1-7-4-7-8V6z"/><path d="M9 12l2 2 4-4"/>',
+  '<circle cx="6" cy="7" r="2"/><circle cx="18" cy="7" r="2"/><circle cx="12" cy="17" r="2"/><path d="M7.7 8.3 11 15.1M16.3 8.3 13 15.1M8 7h8"/>',
+  '<circle cx="11" cy="11" r="6"/><path d="M20 20l-4.3-4.3"/>',
+  '<rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>',
+  '<path d="M5 20V12M10 20V6M15 20V9M20 20v-6"/><path d="M4 20.5h17"/>',
+  '<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3.4"/>',
+  '<path d="M12 4v15M7 19h10M5 8h14M5 8l-2.4 5h4.8zM19 8l-2.4 5h4.8z"/>',
+  '<circle cx="9" cy="8" r="3"/><path d="M3.6 19c0-3 2.4-5 5.4-5s5.4 2 5.4 5"/><path d="M16 6.6a3 3 0 0 1 0 4.8"/>',
+  '<rect x="5" y="8" width="14" height="10" rx="2.5"/><path d="M9 13h.01M15 13h.01M12 5v3M3 12h2M19 12h2"/>'
+];
+function iconSvg(i) { return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">'+ICONS[i]+'</svg>'; }
+
+/* recommended sequencing: which themes must be in place first */
+const WAVES = [1,1,1,2,1,2,3,3,3,3];
+const WAVE_LABEL = { 1:"Wave 1", 2:"Wave 2", 3:"Wave 3" };
+const RECS = [
+  "Name an accountable owner for each major data domain and agree a short, written data strategy. Stand up a light governance forum that meets regularly to set the rules and settle disputes.",
+  "Agree what good looks like for your most-used data, covering accuracy, completeness and timeliness, write it down, and put automated checks on the critical fields so you can watch quality improve.",
+  "Map how data moves between your key systems today, then replace the most fragile manual hand-offs with reliable, monitored connections. Start with the flows that feed your most important reports.",
+  "Stand up a simple catalogue with plain-language definitions and an owner for the data people use most, and capture where each item comes from, so meaning no longer lives only in people's heads.",
+  "Set role-based access so people see only what they need, protect sensitive data with encryption and masking, and run a regular access review. Keep a current record of which data is regulated and how you meet the rules.",
+  "Standardise a small set of trusted reports and give people self-service access to them, then add basic data-literacy training so more people can answer their own questions.",
+  "Pick two or three high-value use cases where AI clearly helps, give each a senior owner and a measurable outcome, and resist scattering effort across pilots that never scale.",
+  "Keep a simple register of every AI use with an owner and a risk rating, require a human review before anything goes live, and record where the AI's answers come from.",
+  "Offer practical, role-based AI training and a small set of approved, safe tools, and encourage teams to share what works so good practice spreads.",
+  "Document and standardise the processes you most want AI to support before you automate them, then start agents on low-risk, well-defined steps with a person approving the key decisions."
+];
+const INFO_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><path d="M12 8h.01"/></svg>';
+
+/* value equation: term -> list of [themeIndex, 'main'|'sub'] */
+const VALUE_TERMS = [
+  { name: "Artificial intelligence", group: "intel", desc: "scale, speed, prediction",
+    refs: [[6,"main"],[6,"sub"],[7,"main"],[7,"sub"],[9,"main"],[9,"sub"]] },
+  { name: "Human intelligence", group: "intel", desc: "judgement, context, ethics",
+    refs: [[8,"main"],[8,"sub"],[5,"sub"]] },
+  { name: "Internal data", group: "data", desc: "what your business knows",
+    refs: [[0,"main"],[0,"sub"],[1,"main"],[1,"sub"],[3,"main"],[3,"sub"]] },
+  { name: "External data", group: "data", desc: "what the market knows",
+    refs: [[2,"sub"]] }
+];
+const DATA_THEMES = [0,1,2,3,4,5];   // themes 1-6
+const AI_THEMES = [6,7,8,9];         // themes 7-10
+
+/* ---- state ---- */
+let state = null;
+function blankAnswers() {
+  return THEMES.map(() => ({ mainCur: null, mainTar: null, subCur: null, subTar: null, note: "" }));
+}
+
+function show(view) {
+  ["landing","wizard","results"].forEach(v =>
+    document.getElementById("view-"+v).classList.toggle("hidden", v !== view));
+  window.scrollTo(0,0);
+}
+function goHome() { show("landing"); }
+
+function startAssessment() {
+  const org = document.getElementById("org-name").value.trim();
+  const dept = document.getElementById("dept").value;
+  const role = document.getElementById("role").value;
+  document.getElementById("org-err").style.display = org ? "none" : "block";
+  document.getElementById("dr-err").style.display = (dept && role) ? "none" : "block";
+  if (!org || !dept || !role) return;
+  state = { org, dept, role, idx: 0, answers: blankAnswers() };
+  document.getElementById("wiz-org").firstChild.textContent = org;
+  document.getElementById("wiz-meta").textContent = [dept, role].filter(Boolean).join("  ·  ");
+  show("wizard");
+  renderTheme();
+}
+
+/* ---- wizard ---- */
+function questionHTML(themeIdx, part) {
+  const t = THEMES[themeIdx][part];
+  const a = state.answers[themeIdx];
+  const curKey = part + "Cur", tarKey = part + "Tar";
+  const cur = a[curKey], tar = a[tarKey];
+  let opts = t.opts.map((txt, i) => {
+    const lv = i + 1;
+    return `<button class="opt-btn ${cur===lv?'sel':''}" onclick="pickCurrent(${themeIdx},'${part}',${lv})">
+      <span class="opt-lv">${lv}</span>
+      <span class="opt-body"><b>Level ${lv}, ${LEVELS[i]}.</b> ${txt}</span></button>`;
+  }).join("");
+  let tbtns = [1,2,3,4,5].map(lv =>
+    `<button class="tbtn ${tar===lv?'sel':''}" ${cur && lv<cur ? 'disabled':''} onclick="pickTarget(${themeIdx},'${part}',${lv})">${lv}</button>`
+  ).join("");
+  return `<div class="qblock">
+    <h3 class="q-text">${t.q}</h3>
+    <p class="q-why">${t.why}</p>
+    <div class="options">${opts}</div>
+    <div class="target-row">
+      <span class="tlabel">Where do you want to be?</span>
+      <div class="tbtns">${tbtns}</div>
+      <span class="thint">Leave it at today's level if there is no appetite to change this yet.</span>
+    </div>
+  </div>`;
+}
+
+function noteHTML(i) {
+  return `<div class="qblock note-block">
+    <label class="note-label">Anything to add on this theme? <span>(optional)</span></label>
+    <textarea class="note-input" rows="2" oninput="setNote(${i}, this.value)" placeholder="Context, examples, blockers, anything worth capturing.">${escapeHtml(state.answers[i].note || "")}</textarea>
+  </div>`;
+}
+function setNote(i, v) { state.answers[i].note = v; }
+function escapeHtml(s) { return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+
+function renderTheme() {
+  const i = state.idx, t = THEMES[i];
+  document.getElementById("q-theme").innerHTML = iconSvg(i) + ` Theme ${i+1}: ${t.key}`;
+  document.getElementById("wiz-count").textContent = `Theme ${i+1} of ${THEMES.length}`;
+  document.getElementById("wiz-bar").style.width = ((i)/THEMES.length*100 + 5) + "%";
+  document.getElementById("q-main").innerHTML = questionHTML(i, "main");
+  document.getElementById("q-sub").innerHTML = questionHTML(i, "sub");
+  document.getElementById("q-note").innerHTML = noteHTML(i);
+  document.getElementById("btn-back").disabled = i === 0;
+  const a = state.answers[i];
+  const done = a.mainCur !== null && a.subCur !== null;
+  const next = document.getElementById("btn-next");
+  next.disabled = !done;
+  next.innerHTML = i === THEMES.length - 1 ? "See results &rarr;" : "Next &rarr;";
+}
+
+function pickCurrent(themeIdx, part, lv) {
+  const a = state.answers[themeIdx];
+  a[part+"Cur"] = lv;
+  if (a[part+"Tar"] === null || a[part+"Tar"] < lv) a[part+"Tar"] = lv; // target defaults to today
+  renderTheme();
+}
+function pickTarget(themeIdx, part, lv) {
+  const a = state.answers[themeIdx];
+  if (a[part+"Cur"] !== null && lv < a[part+"Cur"]) return;
+  a[part+"Tar"] = lv;
+  renderTheme();
+}
+function nextTheme() {
+  const a = state.answers[state.idx];
+  if (a.mainCur === null || a.subCur === null) return;
+  if (state.idx === THEMES.length - 1) { computeAndShow(); return; }
+  state.idx++; renderTheme();
+}
+function prevTheme() { if (state.idx > 0) { state.idx--; renderTheme(); } }
+
+/* ---- scoring ---- */
+function themeScore(a, which) { // which = 'Cur' or 'Tar'
+  return (a["main"+which] + a["sub"+which]) / 2;
+}
+function avg(arr) { return arr.reduce((s,x)=>s+x,0) / arr.length; }
+function levelFor(score) { return Math.max(1, Math.min(5, Math.round(score))); }
+function gapColor(score) { return score >= 4 ? "var(--good)" : score >= 3 ? "var(--accent)" : score >= 2 ? "var(--warn)" : "var(--bad)"; }
+
+function computeAndShow() { renderResults(state.org, [state.dept, state.role].filter(Boolean).join("  ·  "), state.answers); }
+
+function renderResults(org, metaLine, answers) {
+  const cur = answers.map(a => themeScore(a, "Cur"));
+  const tar = answers.map(a => themeScore(a, "Tar"));
+  const overallNow = avg(cur), overallTar = avg(tar);
+  document.getElementById("res-org").textContent = org + (metaLine ? "  ·  " + metaLine : "");
+  document.getElementById("r-now").textContent = overallNow.toFixed(1);
+  document.getElementById("r-tar").textContent = overallTar.toFixed(1);
+  document.getElementById("r-gap").textContent = "+" + (overallTar-overallNow).toFixed(1);
+  const lvl = levelFor(overallNow);
+  document.getElementById("r-level").textContent = "Level " + lvl + ", " + LEVELS[lvl-1];
+  document.getElementById("r-data-now").textContent = avg(DATA_THEMES.map(i=>cur[i])).toFixed(1);
+  document.getElementById("r-data-tar").textContent = avg(DATA_THEMES.map(i=>tar[i])).toFixed(1);
+  document.getElementById("r-ai-now").textContent = avg(AI_THEMES.map(i=>cur[i])).toFixed(1);
+  document.getElementById("r-ai-tar").textContent = avg(AI_THEMES.map(i=>tar[i])).toFixed(1);
+  const appetite = cur.filter((c,i)=> (tar[i]-c) >= 0.5).length;
+  document.getElementById("r-appetite").textContent = appetite;
+
+  drawRadar(THEMES.map(t=>t.key), cur, tar);
+
+  /* recommended order: foundations (wave) first, then weakest, then the gap chosen */
+  const rows = THEMES.map((t,i)=>({ idx: i, name: t.key, wave: WAVES[i], now: cur[i], tar: tar[i], gap: tar[i]-cur[i] }));
+  rows.sort((a,b)=> a.wave - b.wave || a.now - b.now || b.gap - a.gap);
+  const tbody = document.getElementById("r-table"); tbody.innerHTML = "";
+  rows.forEach(r => {
+    const foundation = r.wave === 1 && r.now < 3;
+    let pill, gcls;
+    if (foundation) { pill = `<span class="focuspill yes">Foundation, do first</span>`; gcls = "big"; }
+    else if (r.gap >= 1) { pill = `<span class="focuspill yes">Priority</span>`; gcls = "big"; }
+    else if (r.gap >= 0.5) { pill = `<span class="focuspill watch">Worth a look</span>`; gcls = "mid"; }
+    else { pill = `<span class="focuspill no">Hold for now</span>`; gcls = "none"; }
+    const tr = document.createElement("tr");
+    if (!foundation && r.gap < 0.5) tr.className = "flat";
+    tr.innerHTML = `<td>${r.name} <button class="rec-i" onclick="showRec(event,${r.idx})" aria-label="Recommendation">${INFO_SVG}</button></td><td><span class="wavetag w${r.wave}">${WAVE_LABEL[r.wave]}</span></td>
+      <td class="num">${r.now.toFixed(1)}</td><td class="num">${r.tar.toFixed(1)}</td>
+      <td class="num gap ${gcls}">${r.gap>0?"+":""}${r.gap.toFixed(1)}</td><td>${pill}</td>`;
+    tbody.appendChild(tr);
+  });
+
+  renderNextSteps(rows);
+  renderRoadmap(cur);
+
+  /* value equation, four-term detail */
+  const veq = document.getElementById("r-veq"); veq.innerHTML = "";
+  VALUE_TERMS.forEach(term => {
+    const cs = avg(term.refs.map(([ti,p])=> answers[ti][p+"Cur"]));
+    const ts = avg(term.refs.map(([ti,p])=> answers[ti][p+"Tar"]));
+    veq.insertAdjacentHTML("beforeend",
+      `<div class="veq-card ${term.group}">
+        <div class="veq-term">${term.name}</div>
+        <div class="veq-desc">${term.desc}</div>
+        <div class="veq-bar"><div class="veq-now" style="width:${cs/5*100}%"></div><div class="veq-tar" style="left:calc(${ts/5*100}% - 1px)"></div></div>
+        <div class="veq-vals">${cs.toFixed(1)} <span>now, target ${ts.toFixed(1)}</span></div>
+      </div>`);
+  });
+
+  /* the three forces: data, artificial intelligence, human intelligence */
+  const refAvg = (refs, w) => avg(refs.map(([ti,p])=> answers[ti][p+w]));
+  const aiRefs = VALUE_TERMS[0].refs, hiRefs = VALUE_TERMS[1].refs;
+  const dataRefs = VALUE_TERMS[2].refs.concat(VALUE_TERMS[3].refs);
+  const forces = [
+    { name: "Artificial intelligence", short: "artificial intelligence", now: refAvg(aiRefs,"Cur"), tar: refAvg(aiRefs,"Tar") },
+    { name: "Human intelligence", short: "human intelligence", now: refAvg(hiRefs,"Cur"), tar: refAvg(hiRefs,"Tar") },
+    { name: "Data", short: "data", now: refAvg(dataRefs,"Cur"), tar: refAvg(dataRefs,"Tar") }
+  ];
+  const lowest = Math.min(...forces.map(f=>f.now));
+  const fbox = document.getElementById("r-forces"); fbox.innerHTML = "";
+  forces.forEach(f => {
+    const weak = f.now <= lowest + 0.001;
+    fbox.insertAdjacentHTML("beforeend",
+      `<div class="force ${weak?'weak':''}">
+        ${weak?'<span class="f-tag">constraint</span>':''}
+        <div class="f-name">${f.name}</div>
+        <div class="f-score">${f.now.toFixed(1)}<small> / 5</small></div>
+        <div class="f-bar"><div class="f-now" style="width:${f.now/5*100}%"></div><div class="f-tar" style="left:calc(${f.tar/5*100}% - 1px)"></div></div>
+      </div>`);
+  });
+
+  /* verdict: name the binding constraint */
+  const weakest = forces.slice().sort((a,b)=>a.now-b.now);
+  const c0 = weakest[0];
+  const alsoWeak = weakest.slice(1).filter(f => f.now - c0.now < 0.3);
+  const NEXT_STEP = {
+    "data": "Strengthen the data first. Better AI and sharper decisions both depend on data people can trust, and that includes the outside data you bring in.",
+    "artificial intelligence": "Your data and people are ahead of your AI. The opportunity is to put them to work through real AI use cases, with the governance and process redesign to match.",
+    "human intelligence": "You have data and tools, but the judgement, skills and adoption to use them well are lagging. Invest in literacy, adoption, and human oversight of AI."
+  };
+  let v = "";
+  if (alsoWeak.length) {
+    const names = [c0.short].concat(alsoWeak.map(f=>f.short));
+    const joined = names.slice(0,-1).join(", ") + " and " + names.slice(-1);
+    v = `Two things are holding you back at once, ${joined}, sitting close together near ${c0.now.toFixed(1)} out of 5. `;
+  } else {
+    v = `Your binding constraint today is <b>${c0.short}</b>, at ${c0.now.toFixed(1)} out of 5. `;
+  }
+  v += `Because value is intelligence applied to data, and the three multiply more than they add, the weakest one caps the value you can create. That is where effort has the most leverage right now. `;
+  v += NEXT_STEP[c0.short];
+  const FORCE_THEMES = { "data":[0,1,2,3], "artificial intelligence":[6,7,9], "human intelligence":[5,8] };
+  const ft = FORCE_THEMES[c0.short]; let ti = ft[0]; ft.forEach(k=>{ if (cur[k] < cur[ti]) ti = k; });
+  const doNext = `<div class="verdict-next"><span class="vn-lab">Do this next</span> <b>${escapeHtml(THEMES[ti].key)}.</b> ${escapeHtml(RECS[ti])}</div>`;
+  document.getElementById("r-verdict").innerHTML = v + doNext;
+
+  /* summary */
+  const gap = overallTar - overallNow;
+  let s = `Today you sit at ${overallNow.toFixed(1)} out of 5, which is Level ${lvl}, ${LEVELS[lvl-1].toLowerCase()}. ${LEVEL_BLURB[lvl]} `;
+  s += gap >= 0.3 ? `Your ambition is ${overallTar.toFixed(1)}, a gap of ${gap.toFixed(1)}, so there is clear appetite to improve. `
+     : `Your target is close to where you are, so the picture is more about holding and refining than transforming. `;
+  const dataNow = avg(DATA_THEMES.map(i=>cur[i])), aiNow = avg(AI_THEMES.map(i=>cur[i]));
+  s += aiNow > dataNow + 0.3 ? "Your AI ambition runs ahead of your data foundations, so strengthening the data is what will let the AI pay off."
+     : dataNow > aiNow + 0.3 ? "Your data foundations are stronger than your AI use, so there is room to put that data to work through AI."
+     : "Your data and AI are moving at a similar pace, which is a healthy balance.";
+  document.getElementById("r-summary").textContent = s;
+
+  const fl = document.getElementById("r-focuslist"); fl.innerHTML = "";
+  const top = rows.filter(r=>r.gap>=0.5).slice(0,3);
+  if (top.length === 0) {
+    fl.innerHTML = `<li>${tick(true)}<span>No theme has a meaningful target gap, so the focus is on sustaining what already works.</span></li>`;
+  } else {
+    top.forEach(r => fl.insertAdjacentHTML("beforeend",
+      `<li>${tick(false)}<span>${r.name}: move from ${r.now.toFixed(1)} toward ${r.tar.toFixed(1)}.</span></li>`));
+  }
+
+  renderNotes(answers);
+  show("results");
+}
+function renderNotes(answers) {
+  const notes = THEMES.map((t,i)=>({ name: t.key, note: (answers[i].note || "").trim() })).filter(n=>n.note);
+  const nl = document.getElementById("r-notes-label"), np = document.getElementById("r-notes-panel");
+  if (notes.length) {
+    np.innerHTML = notes.map(n=>`<div class="note-row"><div class="note-theme">${escapeHtml(n.name)}</div><div class="note-text">${escapeHtml(n.note)}</div></div>`).join("");
+    nl.classList.remove("hidden"); np.classList.remove("hidden");
+  } else { nl.classList.add("hidden"); np.classList.add("hidden"); }
+}
+function renderNextSteps(rows) {
+  const pick = rows.filter(r => (r.wave===1 && r.now<3) || r.gap>=0.5).slice(0,5);
+  const list = pick.length ? pick : rows.slice(0,3);
+  document.getElementById("r-nextsteps").innerHTML = list.map((r,n)=>
+    `<li><div class="ns-top"><span class="ns-num">${n+1}</span><span class="ns-name">${escapeHtml(r.name)}</span><span class="wavetag w${r.wave}">${WAVE_LABEL[r.wave]}</span></div><div class="ns-rec">${escapeHtml(RECS[r.idx])}</div></li>`
+  ).join("");
+}
+function renderRoadmap(cur) {
+  const WAVE_NAME = { 1:"Foundations", 2:"Make data usable", 3:"Scale AI" };
+  const host = document.getElementById("r-roadmap"); host.innerHTML = "";
+  [1,2,3].forEach(w => {
+    const items = THEMES.map((t,i)=>({ idx:i, name:t.key, now:cur[i], wave:WAVES[i] })).filter(x=>x.wave===w).sort((a,b)=>a.now-b.now);
+    const chips = items.map(x=>{
+      const st = x.now<2.5 ? "low" : x.now<3.5 ? "mid" : "ok";
+      return `<button class="road-chip ${st}" onmouseenter="recHover(event,${x.idx})" onmouseleave="recOut()" onclick="showRec(event,${x.idx})"><span class="rc-name">${escapeHtml(x.name)}</span><span class="rc-score">${x.now.toFixed(1)}</span></button>`;
+    }).join("");
+    host.insertAdjacentHTML("beforeend",
+      `<div class="road-stage"><div class="road-stage-head"><span class="road-badge">${w}</span><div><div class="road-wave">${WAVE_LABEL[w]}</div><div class="road-name">${WAVE_NAME[w]}</div></div></div><div class="road-chips">${chips}</div></div>`);
+  });
+}
+
+function tick(good) {
+  const c = good ? "var(--good)" : "var(--accent-2)";
+  return good
+    ? `<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="${c}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`
+    : `<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="${c}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+}
+
+/* ---- radar chart (self contained SVG) ---- */
+function drawRadar(labels, now, target) {
+  const n = labels.length, size = 420, cx = size/2, cy = size/2, R = 140, maxV = 5;
+  const ns = "http://www.w3.org/2000/svg";
+  const _rs = getComputedStyle(document.documentElement);
+  const gridC = _rs.getPropertyValue("--radar-grid").trim() || "#e6e8ef";
+  const labelC = _rs.getPropertyValue("--radar-label").trim() || "#5b6478";
+  const svg = document.createElementNS(ns, "svg");
+  svg.setAttribute("viewBox", `0 0 ${size} ${size}`);
+  svg.setAttribute("width", "100%"); svg.style.maxWidth = size + "px"; svg.style.display = "block"; svg.style.margin = "0 auto";
+  const ang = i => (-90 + i*360/n) * Math.PI/180;
+  const pt = (i, v) => [cx + (v/maxV*R)*Math.cos(ang(i)), cy + (v/maxV*R)*Math.sin(ang(i))];
+
+  for (let ring=1; ring<=maxV; ring++) {
+    const poly = document.createElementNS(ns,"polygon");
+    const pts = labels.map((_,i)=>pt(i,ring).join(",")).join(" ");
+    poly.setAttribute("points", pts);
+    poly.setAttribute("fill", "none");
+    poly.setAttribute("stroke", gridC);
+    poly.setAttribute("stroke-width", ring===maxV ? "1.5" : "1");
+    svg.appendChild(poly);
+  }
+  labels.forEach((lab,i)=>{
+    const [x,y] = pt(i, maxV);
+    const line = document.createElementNS(ns,"line");
+    line.setAttribute("x1",cx); line.setAttribute("y1",cy); line.setAttribute("x2",x); line.setAttribute("y2",y);
+    line.setAttribute("stroke", gridC); line.setAttribute("stroke-width","1");
+    svg.appendChild(line);
+    const [lx,ly] = pt(i, maxV + 0.62);
+    const txt = document.createElementNS(ns,"text");
+    const ca = Math.cos(ang(i));
+    txt.setAttribute("x", lx); txt.setAttribute("y", ly);
+    txt.setAttribute("text-anchor", ca > 0.3 ? "start" : ca < -0.3 ? "end" : "middle");
+    txt.setAttribute("dominant-baseline", "middle");
+    txt.setAttribute("font-size", "10.5"); txt.setAttribute("fill", labelC);
+    txt.setAttribute("font-family", "inherit");
+    wrapLabel(txt, lab, ns);
+    svg.appendChild(txt);
+  });
+  function polygon(vals, fill, stroke, dash) {
+    const poly = document.createElementNS(ns,"polygon");
+    poly.setAttribute("points", vals.map((v,i)=>pt(i,v).join(",")).join(" "));
+    poly.setAttribute("fill", fill); poly.setAttribute("stroke", stroke);
+    poly.setAttribute("stroke-width","2"); poly.setAttribute("stroke-linejoin","round");
+    if (dash) poly.setAttribute("stroke-dasharray","5 4");
+    svg.appendChild(poly);
+  }
+  const accent = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim();
+  const accent2 = getComputedStyle(document.documentElement).getPropertyValue('--accent-2').trim();
+  polygon(target, "none", accent2, true);
+  polygon(now, hexA(accent, 0.22), accent, false);
+  target.forEach((v,i)=>{ const [x,y]=pt(i,v); const c=document.createElementNS(ns,"circle"); c.setAttribute("cx",x);c.setAttribute("cy",y);c.setAttribute("r","2.5");c.setAttribute("fill",accent2); svg.appendChild(c); });
+  now.forEach((v,i)=>{ const [x,y]=pt(i,v); const c=document.createElementNS(ns,"circle"); c.setAttribute("cx",x);c.setAttribute("cy",y);c.setAttribute("r","3");c.setAttribute("fill",accent); svg.appendChild(c); });
+
+  const host = document.getElementById("r-radar"); host.innerHTML = ""; host.appendChild(svg);
+}
+function wrapLabel(txt, label, ns) {
+  const words = label.split(" "); let lines = []; let cur = "";
+  words.forEach(w => { if ((cur + " " + w).trim().length > 12) { lines.push(cur.trim()); cur = w; } else cur += " " + w; });
+  if (cur.trim()) lines.push(cur.trim());
+  const startDy = -(lines.length-1)*5.5;
+  lines.forEach((ln,i)=>{ const ts=document.createElementNS(ns,"tspan"); ts.setAttribute("x", txt.getAttribute("x")); ts.setAttribute("dy", i===0?startDy:11); ts.textContent=ln; txt.appendChild(ts); });
+}
+function hexA(hex, a) {
+  hex = hex.replace('#',''); if (hex.length===3) hex = hex.split('').map(c=>c+c).join('');
+  const r=parseInt(hex.slice(0,2),16), g=parseInt(hex.slice(2,4),16), b=parseInt(hex.slice(4,6),16);
+  return `rgba(${r},${g},${b},${a})`;
+}
+
+/* ---- sample report ---- */
+function showSample() {
+  const now = [3.0,2.5,3.5,2.5,4.0,3.0,2.5,2.5,2.0,2.0];
+  const tar = [4.0,4.0,4.0,3.5,4.5,4.0,4.5,4.5,4.0,4.5];
+  const ans = THEMES.map((t,i)=>({
+    mainCur: Math.round(now[i]), subCur: Math.max(1, Math.round(now[i]*2 - Math.round(now[i]))),
+    mainTar: Math.round(tar[i]), subTar: Math.max(Math.round(now[i]), Math.round(tar[i]*2 - Math.round(tar[i])))
+  }));
+  /* make the pair average land near the intended value */
+  ans.forEach((a,i)=>{ a.mainCur=clampLvl(now[i]); a.subCur=clampLvl(now[i]); a.mainTar=clampLvl(tar[i]); a.subTar=clampLvl(tar[i]); });
+  renderResults("Acme Corporation", "IT or Digital  ·  Executive or Leadership", ans);
+}
+function clampLvl(v){ return Math.max(1, Math.min(5, Math.round(v))); }
+
+/* ---- utilities ---- */
+let recTimer = null;
+function recFill(idx) { document.getElementById("rec-pop").innerHTML = `<div class="rec-head">${escapeHtml(THEMES[idx].key)} <span class="wavetag w${WAVES[idx]}">${WAVE_LABEL[WAVES[idx]]}</span></div><div class="rec-body">${escapeHtml(RECS[idx])}</div>`; }
+function recPosition(el) {
+  const pop = document.getElementById("rec-pop");
+  const r = el.getBoundingClientRect(), w = pop.offsetWidth, vw = document.documentElement.clientWidth;
+  let left = r.left + window.scrollX;
+  left = Math.min(left, window.scrollX + vw - w - 14);
+  left = Math.max(window.scrollX + 10, left);
+  pop.style.left = left + "px"; pop.style.top = (r.bottom + window.scrollY + 8) + "px";
+}
+function showRec(e, idx) { e.stopPropagation(); if (recTimer) { clearTimeout(recTimer); recTimer=null; } recFill(idx); document.getElementById("rec-pop").classList.remove("hidden"); recPosition(e.currentTarget); }
+function recHover(e, idx) { if (recTimer) { clearTimeout(recTimer); recTimer=null; } recFill(idx); document.getElementById("rec-pop").classList.remove("hidden"); recPosition(e.currentTarget); }
+function recKeep() { if (recTimer) { clearTimeout(recTimer); recTimer=null; } }
+function recOut() { recTimer = setTimeout(()=> document.getElementById("rec-pop").classList.add("hidden"), 160); }
+function copyLink() {
+  const t = location.href;
+  if (navigator.clipboard) navigator.clipboard.writeText(t).then(toast).catch(toast); else toast();
+}
+function toast() { const t=document.getElementById("toast"); t.classList.add("show"); setTimeout(()=>t.classList.remove("show"),1700); }
+document.getElementById("org-name").addEventListener("keydown", e=>{ if(e.key==="Enter") startAssessment(); });
+document.addEventListener("click", e=>{ const p=document.getElementById("rec-pop"); if(p && !p.classList.contains("hidden") && !e.target.closest(".rec-i") && !e.target.closest("#rec-pop")) p.classList.add("hidden"); });
+
+</script>
+</body>
+</html>

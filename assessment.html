@@ -382,7 +382,7 @@ function start(){
   document.getElementById("dr-err").style.display = (dept&&role)?"none":"block";
   if(!org||!dept||!role) return;
   S = { org, dept, role, active:0, answers:blank(), notes:{} };
-  document.getElementById("head-right").innerHTML = `<div class="prog-wrap"><span class="prog-txt"><b id="p-done">0</b> of <span id="p-total">30</span> answered</span><div class="prog-bar"><i id="p-bar"></i></div></div><button class="ibtn" title="View report" onclick="viewReport()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3h11l3 3v15H5z"/><path d="M9 9h6M9 13h6M9 17h4"/></svg></button>`;
+  document.getElementById("head-right").innerHTML = `<div class="prog-wrap"><span class="prog-txt"><b id="p-done">0</b> of <span id="p-total">30</span> answered</span><div class="prog-bar"><i id="p-bar"></i></div></div><button onclick="viewReport()" style="display:inline-flex;align-items:center;gap:7px;padding:9px 15px;border:none;border-radius:10px;background:var(--grad);color:#fff;font-family:inherit;font-weight:600;font-size:.85rem;cursor:pointer;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;"><path d="M5 3h11l3 3v15H5z"/><path d="M9 9h6M9 13h6M9 17h4"/></svg> View report</button>`;
   view("wizard"); render();
 }
 

@@ -6,7 +6,8 @@ An internal diagnostic of where a team stands today, and where it wants to be, a
 
 - **assessment.html** — the assessment. Ten themes in plain language, a top navigator, statement questions on a 1 to 5 scale, a target and an importance question per item, and notes per theme. Ends in a full report: overall maturity, data and AI readiness, a current-versus-target radar, a value-equation verdict that names whether the constraint is data, AI, or people, a foundations-first roadmap with recommendations on hover, and a Download my responses button.
 - **enterprise.html** — one connected report. Starts at the enterprise level (maturity heatmap, unit comparison, alignment gaps, weighted priorities) and lets you click any department to open its own report (radar, value-equation verdict, roadmap), then back. Import the files people download from the assessment; departments are standardised on import so typed variants still roll up into one unit. Shows sample data until you import.
-- **index.html** — an earlier dark-themed single-page version of the assessment.
+- **index.html** — the homepage; same as assessment.html (the light questionnaire).
+- **classic.html** — an earlier dark-themed single-page version of the assessment.
 
 ## How it works
 
