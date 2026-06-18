@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Data and AI Maturity Assessment</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    /*BRAND-START*/
+    --accent: #9747EF;
+    --accent-deep: #7a33c9;
+    --accent-2: #FA5F09;
+    --hero-bg: radial-gradient(120% 130% at 12% -10%, rgba(151,71,239,.45), transparent 55%), radial-gradient(120% 130% at 110% 120%, rgba(250,95,9,.32), transparent 55%), linear-gradient(155deg, #17122a 0%, #0a0712 60%, #070509 100%);
+    --hero-fg: #ffffff;
+    --logo-bg: #17122a;
+    --chip: #efe6fd;
+    --chip-ink: #6b28c4;
+    --display: 'DM Serif Display', Georgia, serif;
+    --bodyfont: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    /*BRAND-END*/
+    --ink: #11131c;
+    --muted: #5b6478;
+    --line: #e6e8ef;
+    --bg: #f4f6fb;
+    --card: #ffffff;
+    --good: #16a34a;
+    --good-soft: #dcfce7;
+    --warn: #d97706;
+    --warn-soft: #fef3c7;
+    --bad: #dc2626;
+    --bad-soft: #fee2e2;
+    --shadow: 0 10px 40px rgba(20,32,77,0.10);
+    --radius: 16px;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body { font-family: var(--bodyfont); background: var(--bg); color: var(--ink); line-height: 1.5; -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 32px 20px 90px; }
+  .center-wrap { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px; }
+  .hidden { display: none !important; }
+
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 20px; box-shadow: var(--shadow); }
+  .landing { width: 100%; max-width: 560px; padding: 42px 46px 34px; text-align: center; }
+  .logo { width: 76px; height: 76px; border-radius: 18px; background: var(--logo-bg); display: inline-flex; align-items: center; justify-content: center; margin-bottom: 20px; overflow: hidden; }
+  .logo svg { width: 42px; height: 42px; }
+  h1 { font-family: var(--display); font-size: 2.1rem; font-weight: 800; margin: 0 0 10px; letter-spacing: -0.02em; }
+  .wordmark { display:block; font-family: var(--display); font-size: 0.92rem; letter-spacing: .04em; color: var(--muted); margin-bottom: 6px; }
+  .sub { color: var(--muted); font-size: 1rem; margin: 0 auto 26px; max-width: 420px; }
+  .field { text-align: left; margin-bottom: 16px; }
+  .field.row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .field label { display: block; font-weight: 700; font-size: 0.9rem; margin-bottom: 7px; }
+  .field label .req { color: var(--bad); }
+  .field label .opt { color: var(--muted); font-weight: 500; }
+  input[type=text], select { width: 100%; padding: 13px 14px; font-size: 0.98rem; border: 1px solid var(--line); border-radius: 11px; background: #fff; color: var(--ink); font-family: inherit; }
+  input[type=text]:focus, select:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--chip); }
+  .btn { width: 100%; padding: 14px; font-size: 0.98rem; font-weight: 700; border-radius: 11px; border: 1px solid transparent; cursor: pointer; font-family: inherit; transition: background .15s, transform .05s; }
+  .btn:active { transform: translateY(1px); }
+  .btn-primary { background: var(--accent); color: #fff; }
+  .btn-primary:hover { background: var(--accent-deep); }
+  .btn-ghost { background: #fff; color: var(--ink); border-color: var(--line); margin-top: 11px; }
+  .btn-ghost:hover { background: #f8f9fc; }
+  .divider { height: 1px; background: var(--line); margin: 24px 0 16px; }
+  .powered { color: var(--muted); font-size: 0.84rem; }
+  .powered b { color: var(--ink); }
+  .err { color: var(--bad); font-size: 0.82rem; margin-top: 6px; display: none; }
+
+  /* wizard */
+  .wiz-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 8px; }
+  .wiz-org { font-weight: 800; font-size: 1.02rem; }
+  .wiz-org small { display:block; color: var(--muted); font-weight: 500; font-size: .8rem; margin-top: 2px; }
+  .wiz-count { color: var(--muted); font-size: 0.86rem; font-weight: 700; white-space: nowrap; }
+  .progress { height: 8px; background: var(--line); border-radius: 999px; overflow: hidden; margin: 12px 0 26px; }
+  .progress > i { display: block; height: 100%; background: var(--accent); border-radius: 999px; transition: width .25s ease; }
+  .q-card { padding: 30px 34px; }
+  .q-theme { display:inline-block; font-size: 0.74rem; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; color: var(--chip-ink); background: var(--chip); padding: 6px 12px; border-radius: 999px; margin-bottom: 18px; }
+  .qblock { margin-bottom: 26px; }
+  .qblock + .qblock { border-top: 1px solid var(--line); padding-top: 24px; }
+  .q-text { font-size: 1.18rem; font-weight: 800; letter-spacing: -0.01em; margin: 0 0 4px; }
+  .q-why { color: var(--muted); margin: 0 0 16px; font-size: 0.92rem; }
+  .options { display: flex; flex-direction: column; gap: 9px; }
+  .opt-btn { text-align: left; border: 1.5px solid var(--line); background: #fff; border-radius: 12px; padding: 12px 14px; cursor: pointer; display: flex; gap: 13px; align-items: flex-start; font-family: inherit; transition: border-color .12s, background .12s; }
+  .opt-btn:hover { border-color: var(--accent); background: #fafbff; }
+  .opt-btn.sel { border-color: var(--accent); background: var(--chip); }
+  .opt-lv { flex: 0 0 auto; width: 28px; height: 28px; border-radius: 8px; background: var(--bg); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: .9rem; color: var(--chip-ink); }
+  .opt-btn.sel .opt-lv { background: var(--accent); color: #fff; }
+  .opt-body { font-size: 0.93rem; }
+  .opt-body b { font-weight: 700; }
+  .target-row { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; margin-top: 14px; padding: 12px 14px; background: var(--bg); border-radius: 12px; }
+  .target-row .tlabel { font-size: 0.86rem; font-weight: 700; }
+  .target-row .thint { font-size: 0.78rem; color: var(--muted); flex-basis: 100%; }
+  .tbtns { display: flex; gap: 6px; }
+  .tbtn { width: 34px; height: 34px; border-radius: 8px; border: 1.5px solid var(--line); background: #fff; font-weight: 800; cursor: pointer; color: var(--muted); font-family: inherit; }
+  .tbtn:hover:not(:disabled) { border-color: var(--accent-2); }
+  .tbtn.sel { background: var(--accent-2); border-color: var(--accent-2); color: #fff; }
+  .tbtn:disabled { opacity: .35; cursor: not-allowed; }
+  .wiz-nav { display: flex; justify-content: space-between; margin-top: 24px; gap: 12px; }
+  .wiz-nav .btn { width: auto; padding: 12px 24px; }
+  .btn-back { background: #fff; border-color: var(--line); color: var(--ink); }
+  .btn-back:disabled { opacity: .4; cursor: not-allowed; }
+  .btn-next:disabled { opacity: .5; cursor: not-allowed; }
+
+  /* results */
+  .res-top { display: flex; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; gap: 16px; margin-bottom: 6px; }
+  .res-title { font-family: var(--display); font-size: 1.6rem; font-weight: 800; margin: 0; letter-spacing: -0.02em; }
+  .res-org { color: var(--muted); margin: 3px 0 0; font-size: .95rem; }
+  .res-actions { display: flex; gap: 9px; flex-wrap: wrap; }
+  .res-actions .btn { width: auto; padding: 10px 16px; font-size: .88rem; }
+  .grid { display: grid; gap: 18px; }
+  .tiles { grid-template-columns: repeat(4, 1fr); margin-top: 16px; }
+  .panel { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 22px 24px; box-shadow: 0 4px 18px rgba(20,32,77,0.05); }
+  .panel h3 { margin: 0 0 3px; font-size: 1.02rem; font-weight: 800; }
+  .panel .psub { color: var(--muted); font-size: .86rem; margin: 0 0 16px; }
+  .tile { text-align: left; }
+  .tile .t-lab { font-size: .78rem; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); }
+  .tile .t-now { font-family: var(--display); font-size: 2.3rem; font-weight: 800; line-height: 1.05; letter-spacing: -0.02em; }
+  .tile .t-now small { font-size: 1rem; font-weight: 600; color: var(--muted); }
+  .tile .t-arrow { font-size: .85rem; color: var(--muted); margin-top: 4px; }
+  .tile .t-arrow b { color: var(--accent-2); }
+  .tile.hero { background: var(--hero-bg); color: var(--hero-fg); border: none; }
+  .tile.hero .t-lab { color: rgba(255,255,255,.8); }
+  .tile.hero .t-now small { color: rgba(255,255,255,.7); }
+  .tile.hero .t-arrow { color: rgba(255,255,255,.82); }
+  .tile.hero .t-arrow b { color: #fff; }
+  .level-pill { display:inline-block; margin-top: 8px; background: rgba(255,255,255,.18); padding: 5px 12px; border-radius: 999px; font-weight: 700; font-size: .8rem; }
+
+  .section-label { font-family: var(--display); font-size: 1.15rem; font-weight: 800; margin: 30px 0 14px; letter-spacing: -0.01em; }
+  .two-col { display: grid; grid-template-columns: 1.05fr .95fr; gap: 18px; align-items: start; }
+
+  .legend { display: flex; gap: 18px; font-size: .82rem; margin-top: 8px; }
+  .legend i { display:inline-block; width: 14px; height: 14px; border-radius: 3px; margin-right: 6px; vertical-align: -2px; }
+  .legend .now i { background: var(--accent); }
+  .legend .tar i { background: transparent; border: 2px solid var(--accent-2); }
+
+  table { width: 100%; border-collapse: collapse; font-size: .9rem; }
+  th, td { text-align: left; padding: 10px 8px; border-bottom: 1px solid var(--line); }
+  th { font-size: .74rem; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); font-weight: 700; }
+  td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+  tr.flat td { color: var(--muted); }
+  .gap { font-weight: 800; }
+  .gap.big { color: var(--bad); }
+  .gap.mid { color: var(--warn); }
+  .gap.none { color: var(--muted); font-weight: 600; }
+  .focuspill { display:inline-block; padding: 3px 9px; border-radius: 999px; font-size: .74rem; font-weight: 700; }
+  .focuspill.yes { background: var(--bad-soft); color: var(--bad); }
+  .focuspill.watch { background: var(--warn-soft); color: var(--warn); }
+  .focuspill.no { background: var(--bg); color: var(--muted); }
+
+  /* value equation */
+  .veq { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 12px; }
+  .veq-card { border: 1px solid var(--line); border-radius: 12px; padding: 14px; }
+  .veq-card.intel { border-top: 3px solid var(--accent); }
+  .veq-card.data { border-top: 3px solid var(--accent-2); }
+  .veq-term { font-weight: 800; font-size: .92rem; }
+  .veq-desc { font-size: .78rem; color: var(--muted); margin: 2px 0 10px; }
+  .veq-bar { height: 8px; background: var(--bg); border-radius: 999px; position: relative; margin-bottom: 5px; }
+  .veq-now { position: absolute; left:0; top:0; height: 100%; border-radius: 999px; background: var(--accent); }
+  .veq-tar { position: absolute; top: -3px; width: 3px; height: 14px; border-radius: 2px; background: var(--accent-2); }
+  .veq-card.data .veq-now { background: var(--accent-2); }
+  .veq-card.data .veq-tar { background: var(--accent); }
+  .veq-vals { font-size: .8rem; font-weight: 700; }
+  .veq-vals span { color: var(--muted); font-weight: 500; }
+  .veq-eq { text-align:center; font-family: var(--display); font-size: 1.05rem; margin: 0 0 16px; color: var(--ink); }
+  .veq-eq b { color: var(--accent); } .veq-eq u { text-decoration: none; color: var(--accent-2); }
+  .forces { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin: 4px 0 16px; }
+  .force { border: 1px solid var(--line); border-radius: 12px; padding: 16px 16px 18px; position: relative; }
+  .force.weak { border-color: var(--bad); background: var(--bad-soft); }
+  .force .f-name { font-weight: 800; font-size: .95rem; }
+  .force .f-score { font-family: var(--display); font-size: 2rem; font-weight: 800; line-height: 1.1; letter-spacing: -0.02em; }
+  .force .f-score small { font-size: .85rem; color: var(--muted); font-weight: 600; }
+  .force .f-tag { position: absolute; top: 14px; right: 14px; font-size: .68rem; font-weight: 800; text-transform: uppercase; letter-spacing: .04em; color: var(--bad); }
+  .force .f-bar { height: 8px; background: #fff; border: 1px solid var(--line); border-radius: 999px; position: relative; margin-top: 9px; }
+  .force .f-now { position: absolute; left: 0; top: 0; height: 100%; border-radius: 999px; background: var(--accent); }
+  .force .f-tar { position: absolute; top: -4px; width: 3px; height: 14px; background: var(--accent-2); border-radius: 2px; }
+  .verdict { font-size: 1rem; line-height: 1.6; background: var(--chip); border-radius: 12px; padding: 15px 18px; margin-bottom: 14px; }
+  .verdict b { color: var(--ink); }
+  .veq-detail-lab { font-size: .8rem; font-weight: 700; color: var(--muted); margin: 4px 0 8px; }
+
+  ul.ticks { list-style: none; margin: 8px 0 0; padding: 0; }
+  ul.ticks li { display: flex; gap: 9px; align-items: flex-start; margin-bottom: 8px; font-size: .9rem; }
+  ul.ticks li svg { flex: 0 0 auto; margin-top: 3px; }
+
+  .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: var(--ink); color:#fff; padding: 11px 20px; border-radius: 999px; font-size: .88rem; font-weight: 600; opacity: 0; pointer-events: none; transition: opacity .2s; z-index: 50; }
+  .toast.show { opacity: 1; }
+  .footnote { color: var(--muted); font-size: .8rem; margin-top: 26px; text-align: center; }
+
+  @media (max-width: 860px) {
+    .tiles { grid-template-columns: 1fr 1fr; }
+    .two-col, .veq { grid-template-columns: 1fr; }
+    .veq { grid-template-columns: 1fr 1fr; }
+    .field.row2 { grid-template-columns: 1fr; }
+    .q-card { padding: 24px 20px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ LANDING / INTAKE ============ -->
+<section id="view-landing" class="center-wrap">
+  <div class="card landing">
+    <div class="logo">
+      <!--LOGO-START-->
+      <svg width="54" height="54" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="arg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#9747EF"/><stop offset="1" stop-color="#FA5F09"/></linearGradient>
+          <linearGradient id="art" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#C49BF4"/><stop offset="1" stop-color="#FFFFFF"/></linearGradient>
+        </defs>
+        <polygon points="50,8 88,29 88,71 50,92 12,71 12,29" fill="none" stroke="url(#arg)" stroke-width="3.5" stroke-linejoin="round"/>
+        <text x="50" y="60" text-anchor="middle" font-family="Georgia, serif" font-size="30" font-weight="bold" letter-spacing="-1" fill="url(#art)">AR</text>
+      </svg>
+      <!--LOGO-END-->
+    </div>
+    <span class="wordmark" id="wordmark">Arielle Rolland Advisory</span>
+    <h1>Data and AI Maturity Assessment</h1>
+    <p class="sub">A short internal check of where your team stands today, and where you want to be, across data and AI. Ten themes, about five minutes.</p>
+
+    <div class="field">
+      <label>Organisation name <span class="req">*</span></label>
+      <input type="text" id="org-name" placeholder="Enter your organisation name" autocomplete="off" />
+      <div class="err" id="org-err">Please enter your organisation name to begin.</div>
+    </div>
+    <div class="field row2">
+      <div>
+        <label>Department <span class="req">*</span></label>
+        <select id="dept">
+          <option value="">Choose one</option>
+          <option>Commercial or Sales</option>
+          <option>Marketing</option>
+          <option>Supply Chain or Operations</option>
+          <option>Manufacturing</option>
+          <option>Quality</option>
+          <option>Regulatory Affairs</option>
+          <option>R&amp;D or Clinical</option>
+          <option>Finance</option>
+          <option>HR or People</option>
+          <option>IT or Digital</option>
+          <option>Other</option>
+        </select>
+      </div>
+      <div>
+        <label>Your role <span class="req">*</span></label>
+        <input type="text" id="role" placeholder="e.g. Head of Quality" autocomplete="off" />
+      </div>
+    </div>
+    <div class="err" id="dr-err" style="margin-bottom:10px;">Please choose a department and a role.</div>
+
+    <button class="btn btn-primary" onclick="startAssessment()">Start assessment</button>
+    <button class="btn btn-ghost" onclick="showSample()">View sample report</button>
+
+    <div class="divider"></div>
+    <p class="powered" id="powered">Powered by <b>Arielle Rolland Advisory</b> &middot; Strategic Data &amp; AI Leadership</p>
+  </div>
+</section>
+
+<!-- ============ WIZARD ============ -->
+<section id="view-wizard" class="wrap hidden">
+  <div class="wiz-head">
+    <div class="wiz-org" id="wiz-org">Organisation<small id="wiz-meta"></small></div>
+    <div class="wiz-count" id="wiz-count">Theme 1 of 10</div>
+  </div>
+  <div class="progress"><i id="wiz-bar" style="width:5%"></i></div>
+
+  <div class="card q-card">
+    <span class="q-theme" id="q-theme">Theme</span>
+    <div id="q-main"></div>
+    <div id="q-sub"></div>
+  </div>
+
+  <div class="wiz-nav">
+    <button class="btn btn-back" id="btn-back" onclick="prevTheme()">&larr; Back</button>
+    <button class="btn btn-primary btn-next" id="btn-next" onclick="nextTheme()">Next &rarr;</button>
+  </div>
+</section>
+
+<!-- ============ RESULTS ============ -->
+<section id="view-results" class="wrap hidden">
+  <div class="res-top">
+    <div>
+      <h2 class="res-title">Data and AI maturity, where you are and where you want to be</h2>
+      <p class="res-org" id="res-org">Organisation</p>
+    </div>
+    <div class="res-actions">
+      <button class="btn btn-ghost" onclick="copyLink()">Copy link</button>
+      <button class="btn btn-ghost" onclick="window.print()">Print or PDF</button>
+      <button class="btn btn-primary" onclick="goHome()">Back to start</button>
+    </div>
+  </div>
+
+  <div class="grid tiles">
+    <div class="panel tile hero">
+      <div class="t-lab">Overall maturity</div>
+      <div class="t-now"><span id="r-now">0.0</span><small> / 5</small></div>
+      <div class="t-arrow">Target <b id="r-tar">0.0</b> &middot; gap <span id="r-gap">0.0</span></div>
+      <div class="level-pill" id="r-level">Level</div>
+    </div>
+    <div class="panel tile">
+      <div class="t-lab">Data readiness</div>
+      <div class="t-now"><span id="r-data-now">0.0</span><small> / 5</small></div>
+      <div class="t-arrow">Target <b id="r-data-tar">0.0</b></div>
+    </div>
+    <div class="panel tile">
+      <div class="t-lab">AI readiness</div>
+      <div class="t-now"><span id="r-ai-now">0.0</span><small> / 5</small></div>
+      <div class="t-arrow">Target <b id="r-ai-tar">0.0</b></div>
+    </div>
+    <div class="panel tile">
+      <div class="t-lab">Appetite to change</div>
+      <div class="t-now"><span id="r-appetite">0</span><small> themes</small></div>
+      <div class="t-arrow">have a real target gap</div>
+    </div>
+  </div>
+
+  <div class="section-label">Maturity across the ten themes</div>
+  <div class="panel two-col">
+    <div>
+      <h3>Today versus target</h3>
+      <p class="psub">Each axis is a theme, scored 1 to 5. The filled shape is where you are now. The outline is where you want to be. The space between them is your improvement agenda.</p>
+      <div class="legend">
+        <span class="now"><i></i>Where we are now</span>
+        <span class="tar"><i></i>Where we want to be</span>
+      </div>
+    </div>
+    <div id="r-radar"></div>
+  </div>
+
+  <div class="section-label">Where to focus, ranked by the gap you chose</div>
+  <div class="panel">
+    <p class="psub">Themes are ordered by the gap between today and your target. Where you set no target gap, there is no appetite to change yet, so there is no need to focus there now.</p>
+    <table>
+      <thead><tr><th>Theme</th><th class="num">Today</th><th class="num">Target</th><th class="num">Gap</th><th>Focus</th></tr></thead>
+      <tbody id="r-table"></tbody>
+    </table>
+  </div>
+
+  <div class="section-label">The value equation: where your value comes from</div>
+  <div class="panel">
+    <p class="veq-eq">value = <b>artificial intelligence + human intelligence</b> applied to <u>internal + external data</u></p>
+    <p class="psub" id="r-summary"></p>
+    <div class="forces" id="r-forces"></div>
+    <div class="verdict" id="r-verdict"></div>
+    <p class="veq-detail-lab">The four terms in detail. Filled bar is today, the marker is your target.</p>
+    <div class="veq" id="r-veq"></div>
+    <ul class="ticks" id="r-focuslist"></ul>
+  </div>
+
+  <p class="footnote">Internal assessment for one organisation. Scores reflect the views of the person completing it. Run it across departments and roles to compare perspectives.</p>
+</section>
+
+<div class="toast" id="toast">Link copied to clipboard</div>
+
+<script>
+const LEVELS = ["Initial","Developing","Defined","Managed","Optimised"];
+const LEVEL_BLURB = {
+  1: "Mostly ad hoc and reactive. Foundations are not yet in place.",
+  2: "Some good practice is emerging, but it is inconsistent.",
+  3: "Documented and consistent. A solid, defined base to build on.",
+  4: "Measured and managed, with clear accountability and monitoring.",
+  5: "A continuous strength and a genuine source of advantage."
+};
+
+/* ---- 10 themes, each with a main question and a subquestion ---- */
+const THEMES = [
+  { key: "Ownership and direction",
+    main: { q: "Is it clear who is responsible for our important data, and do we have a plan for how we use it?",
+      why: "When no one owns the data, problems get ignored and teams argue over whose numbers are right.",
+      opts: [
+        "You spend ages chasing around to find who owns a piece of data, and often no one does.",
+        "You can sometimes track down an owner, but it depends who you ask and the answers conflict.",
+        "You know who to go to for the main types of data, and there are agreed rules to follow.",
+        "Owners are clearly accountable, and you can see how well the rules are being kept.",
+        "Good data ownership is just how things run here, and it visibly steers where the business invests." ] },
+    sub: { q: "When two reports disagree, do we have an agreed source that everyone trusts?",
+      why: "Without an agreed source of truth, meetings get hijacked by arguments over whose numbers are right.",
+      opts: [
+        "Two reports disagree and the meeting derails into arguing about whose number is right.",
+        "People have favourite sources, but nothing is official so the debates keep happening.",
+        "There is a named official source for the main numbers, and people actually use it.",
+        "The agreed source is reused everywhere, and nothing goes out the door without it.",
+        "Reports and AI pull from the trusted source automatically, so the numbers simply match." ] } },
+
+  { key: "Trustworthy data",
+    main: { q: "Can people trust that the numbers and records they work with are correct and complete?",
+      why: "Bad data leads to wrong decisions, rework, and reports that contradict each other.",
+      opts: [
+        "You only discover the data was wrong after it has already caused a problem.",
+        "Someone eyeballs the important data by hand, usually once something has gone wrong.",
+        "There is an agreed bar for what good data looks like, and it gets checked against it.",
+        "Data quality is measured and tracked, so you can see it getting better or worse.",
+        "Quality is checked automatically and most issues are caught and fixed before anyone notices." ] },
+    sub: { q: "Are our core records, like customers, products or suppliers, free of duplicates and matched across systems?",
+      why: "When the same customer or product exists several times across systems, work gets duplicated, things go to the wrong place, and counts are wrong.",
+      opts: [
+        "The same customer or product is entered many times in different systems, and nothing links them.",
+        "We clean up duplicates by hand, usually once they have caused a visible problem.",
+        "We have rules for spotting and merging duplicates, and someone keeps the core records tidy.",
+        "Core records are automatically matched and de-duplicated across systems, and kept accurate.",
+        "Every system draws on the same clean master set of core records, with no duplicates." ] } },
+
+  { key: "Systems and data",
+    main: { q: "Do our systems connect and move data between each other reliably?",
+      why: "If systems do not talk to each other, data gets re-keyed and rebuilt by hand, which is slow, costly and error prone.",
+      opts: [
+        "Our systems do not talk to each other, so data gets copied and re-keyed by hand between them.",
+        "A few systems are wired together, but the links are patchy and break with little warning.",
+        "There is an agreed way for systems to exchange data, used consistently, and we can see it flowing.",
+        "Data moves between systems automatically, and we watch reliability, cost and performance.",
+        "Systems exchange data seamlessly in near real time, and the flows mostly recover on their own." ] },
+    sub: { q: "Do we bring in and combine relevant outside data, such as market, partner and industry data, with our own?",
+      why: "Your own data only tells half the story. Outside data is what makes it comparable and forward looking.",
+      opts: [
+        "You work almost entirely from your own data and rarely see anything from outside.",
+        "Outside data comes in now and then, by hand, for a one off question.",
+        "There are agreed outside sources that are used regularly.",
+        "Outside data is brought in and combined with your own to sharpen decisions.",
+        "Your data and outside data flow together seamlessly and feed reporting and AI." ] } },
+
+  { key: "Find and reuse",
+    main: { q: "When someone has the data, can they understand what it means without asking around?",
+      why: "When no one can tell what a field means or where it came from, people misread it or give up and ask a colleague.",
+      opts: [
+        "There is no catalogue, so you cannot tell what data exists or what each field actually means.",
+        "A few glossaries or spreadsheets exist, but they are out of date as often as not.",
+        "There is a clear catalogue where you can browse the data and read a plain description of each item.",
+        "The catalogue stays current and shows where each piece of data came from and how it is defined.",
+        "People and AI instantly understand what any piece of data means and can trust its definition." ] },
+    sub: { q: "Do we build data once so it can be reused, or rebuild it from scratch for every project?",
+      why: "Rebuilding the same data again and again wastes money, and every team ends up with slightly different answers.",
+      opts: [
+        "Every project builds its data again from scratch, as a one off.",
+        "Some data gets reused, but the ownership and quality are hit and miss.",
+        "Key data is packaged so others can reuse it, with a clear owner.",
+        "Trusted, reusable data is easy to find and shared across the business.",
+        "Trusted data products are shared across the whole business and with partners." ] } },
+
+  { key: "Security and compliance",
+    main: { q: "Are we confident that the right people can see sensitive data, and the wrong people cannot?",
+      why: "A breach or a privacy slip can mean fines, lost trust, and serious damage to our reputation.",
+      opts: [
+        "Who can see what is loose and inconsistent, and you are never quite sure who has access.",
+        "People log in with passwords, and the most sensitive data has basic protection.",
+        "There are clear rules about who can see what, and they get checked.",
+        "Access is monitored and audited, and the risks are actively managed.",
+        "Access is watched in real time, with advanced privacy protection built in." ] },
+    sub: { q: "Can we show that we use data legally and ethically?",
+      why: "Getting this wrong can mean regulatory fines, legal action, and a serious hit to reputation.",
+      opts: [
+        "You only think about compliance when something forces you to.",
+        "You know the main rules but handle them one situation at a time.",
+        "You know which data is regulated and can show you follow the privacy rules.",
+        "Privacy and consent steps run automatically, and you watch for misuse.",
+        "You continuously monitor for legal and ethical risk and can evidence it on demand." ] } },
+
+  { key: "Insight and confidence",
+    main: { q: "Can people turn data into the answers they need to make decisions?",
+      why: "If turning data into an answer is slow or manual, decisions slow down and people fall back on gut feel.",
+      opts: [
+        "Turning data into an answer means stitching spreadsheets together by hand, and the numbers rarely agree.",
+        "There are some dashboards, but every team builds its own and they tell different stories.",
+        "People can self serve standard reports and answer their own questions without waiting.",
+        "We can see which insights get used and whether they actually change decisions.",
+        "Insight is built right into everyday decisions, and a lot of it surfaces automatically." ] },
+    sub: { q: "Are our people comfortable using data in their everyday decisions?",
+      why: "If only a handful of specialists can work with data, everyone else keeps guessing.",
+      opts: [
+        "Most calls are made on gut feel, and few people are at ease with data.",
+        "A handful of enthusiasts use data well, but the skills are very uneven.",
+        "Most people are comfortable with data and share a common language for it.",
+        "Skill levels are understood and matched to what each role needs.",
+        "Reaching for data is simply how everyone here makes decisions." ] } },
+
+  { key: "AI strategy and value",
+    main: { q: "Do we have an agreed plan for where AI should help the business, with someone senior responsible for it?",
+      why: "Without a clear plan and an owner, AI effort scatters across pilots that never add up to real value.",
+      opts: [
+        "There is no shared view of where AI should help, and no one is holding the agenda.",
+        "A few people have AI ideas, but there is no shared plan and no clear sponsor.",
+        "Where AI should help is written down, and a senior person is accountable for it.",
+        "The AI plan is tied to business goals and budgets, and leaders review the progress.",
+        "AI is part of how strategy is set each year, and the plan flexes as things change." ] },
+    sub: { q: "Can we point to measurable value that AI has delivered, and is it scaling?",
+      why: "Activity is not value. The test is whether AI moves real numbers, like cost, speed or quality, and whether that spreads.",
+      opts: [
+        "We cannot point to any measurable value from AI yet.",
+        "A pilot or two showed promise, but nothing has delivered value at scale.",
+        "A few AI uses deliver real, measurable value in their area.",
+        "We track the value AI delivers, and several uses have scaled beyond where they started.",
+        "AI delivers significant, measured value across the business and it compounds over time." ] } },
+
+  { key: "Governing AI",
+    main: { q: "When we use AI, can we trust and explain what it does, and stop it when it goes wrong?",
+      why: "AI that no one oversees can make biased or wrong decisions at scale, with legal and reputational fallout.",
+      opts: [
+        "AI gets used with no real oversight of how it was built or what it is doing.",
+        "Some of it is written down, but there are no firm controls.",
+        "Each AI tool has an owner, and a person signs it off before it goes live.",
+        "You can trace where AI answers come from, and they are backed by trusted sources.",
+        "AI runs within clear limits and shuts itself down if it drifts or shows bias." ] },
+    sub: { q: "Do we know which AI uses carry the most risk, and do we keep them safe and within the rules once live?",
+      why: "Some AI uses are higher risk and increasingly regulated, and being caught unprepared is costly.",
+      opts: [
+        "AI risk is not assessed, and tools are not checked once they are live.",
+        "Risk is weighed case by case, and live problems surface only when something goes wrong.",
+        "AI uses are sorted by risk, and live tools are checked from time to time.",
+        "Higher risk uses get extra oversight, and live AI is monitored for accuracy and fairness.",
+        "Risk, compliance and live monitoring are built in, and you keep pace with new regulation." ] } },
+
+  { key: "AI skills and adoption",
+    main: { q: "Do our people understand what AI can and cannot do, and are they confident using it in their work?",
+      why: "If people do not understand AI, they either avoid useful tools or trust them blindly, and both are costly.",
+      opts: [
+        "Most people are unsure what AI even is or how it could help them.",
+        "There is curiosity and some self taught use, but no real guidance or training.",
+        "Training is on offer, and people know the basics of what AI can and cannot do.",
+        "People across roles use AI with confidence and know when to question what it gives back.",
+        "Using AI well is a core skill here, kept sharp with ongoing coaching." ] },
+    sub: { q: "Is AI becoming a normal, supported part of how our people do their everyday work?",
+      why: "People can be skilled at AI yet still not use it. Value comes only when it is woven into the work.",
+      opts: [
+        "AI is not part of how people work, and nothing encourages them to try it.",
+        "A few enthusiasts use AI, but most people carry on exactly as before.",
+        "People are actively encouraged to use approved AI, with the how and why explained.",
+        "Many teams have changed how they work because of AI, with support to make the shift.",
+        "Using AI sensibly is just how work happens, and people keep finding new uses for it." ] } },
+
+  { key: "Process and agents",
+    main: { q: "Are our ways of working ready to embed AI, or do we need to redesign them for AI to be genuinely useful?",
+      why: "Bolting AI onto a broken or undocumented process just makes the mess run faster. The big gains come from rethinking the work.",
+      opts: [
+        "The processes are undocumented and inconsistent, so AI has nothing solid to plug into.",
+        "Some processes are written down, but the assumption is that AI will just slot into today's way of working.",
+        "The key processes are standard and documented, and you have spotted where AI could help.",
+        "Selected processes are being redesigned around what AI does well, rather than bolting it on.",
+        "How work gets done is continually reinvented, with AI and agents at the centre and people overseeing." ] },
+    sub: { q: "Can our processes be trusted to run with AI or agents making or recommending decisions?",
+      why: "Agentic AI can only be trusted on processes that are documented, controlled and auditable.",
+      opts: [
+        "Not really, the processes lean on people and on judgement that is never written down.",
+        "Rarely, a few steps are automated but with little control or audit trail.",
+        "For the defined processes there are clear rules, checks, and a record of what happened.",
+        "AI assists or recommends within agreed limits, and people approve the key steps.",
+        "Agents run routine processes end to end within guardrails, and people handle the exceptions." ] } }
+];
+
+/* value equation: term -> list of [themeIndex, 'main'|'sub'] */
+const VALUE_TERMS = [
+  { name: "Artificial intelligence", group: "intel", desc: "scale, speed, prediction",
+    refs: [[6,"main"],[6,"sub"],[7,"main"],[7,"sub"],[9,"main"],[9,"sub"]] },
+  { name: "Human intelligence", group: "intel", desc: "judgement, context, ethics",
+    refs: [[8,"main"],[8,"sub"],[5,"sub"]] },
+  { name: "Internal data", group: "data", desc: "what your business knows",
+    refs: [[0,"main"],[0,"sub"],[1,"main"],[1,"sub"],[3,"main"],[3,"sub"]] },
+  { name: "External data", group: "data", desc: "what the market knows",
+    refs: [[2,"sub"]] }
+];
+const DATA_THEMES = [0,1,2,3,4,5];   // themes 1-6
+const AI_THEMES = [6,7,8,9];         // themes 7-10
+
+/* ---- state ---- */
+let state = null;
+function blankAnswers() {
+  return THEMES.map(() => ({ mainCur: null, mainTar: null, subCur: null, subTar: null }));
+}
+
+function show(view) {
+  ["landing","wizard","results"].forEach(v =>
+    document.getElementById("view-"+v).classList.toggle("hidden", v !== view));
+  window.scrollTo(0,0);
+}
+function goHome() { show("landing"); }
+
+function startAssessment() {
+  const org = document.getElementById("org-name").value.trim();
+  const dept = document.getElementById("dept").value;
+  const role = document.getElementById("role").value;
+  document.getElementById("org-err").style.display = org ? "none" : "block";
+  document.getElementById("dr-err").style.display = (dept && role) ? "none" : "block";
+  if (!org || !dept || !role) return;
+  state = { org, dept, role, idx: 0, answers: blankAnswers() };
+  document.getElementById("wiz-org").firstChild.textContent = org;
+  document.getElementById("wiz-meta").textContent = [dept, role].filter(Boolean).join("  ·  ");
+  show("wizard");
+  renderTheme();
+}
+
+/* ---- wizard ---- */
+function questionHTML(themeIdx, part) {
+  const t = THEMES[themeIdx][part];
+  const a = state.answers[themeIdx];
+  const curKey = part + "Cur", tarKey = part + "Tar";
+  const cur = a[curKey], tar = a[tarKey];
+  let opts = t.opts.map((txt, i) => {
+    const lv = i + 1;
+    return `<button class="opt-btn ${cur===lv?'sel':''}" onclick="pickCurrent(${themeIdx},'${part}',${lv})">
+      <span class="opt-lv">${lv}</span>
+      <span class="opt-body"><b>Level ${lv}, ${LEVELS[i]}.</b> ${txt}</span></button>`;
+  }).join("");
+  let tbtns = [1,2,3,4,5].map(lv =>
+    `<button class="tbtn ${tar===lv?'sel':''}" ${cur && lv<cur ? 'disabled':''} onclick="pickTarget(${themeIdx},'${part}',${lv})">${lv}</button>`
+  ).join("");
+  return `<div class="qblock">
+    <h3 class="q-text">${t.q}</h3>
+    <p class="q-why">${t.why}</p>
+    <div class="options">${opts}</div>
+    <div class="target-row">
+      <span class="tlabel">Where do you want to be?</span>
+      <div class="tbtns">${tbtns}</div>
+      <span class="thint">Leave it at today's level if there is no appetite to change this yet.</span>
+    </div>
+  </div>`;
+}
+
+function renderTheme() {
+  const i = state.idx, t = THEMES[i];
+  document.getElementById("q-theme").textContent = `Theme ${i+1}: ${t.key}`;
+  document.getElementById("wiz-count").textContent = `Theme ${i+1} of ${THEMES.length}`;
+  document.getElementById("wiz-bar").style.width = ((i)/THEMES.length*100 + 5) + "%";
+  document.getElementById("q-main").innerHTML = questionHTML(i, "main");
+  document.getElementById("q-sub").innerHTML = questionHTML(i, "sub");
+  document.getElementById("btn-back").disabled = i === 0;
+  const a = state.answers[i];
+  const done = a.mainCur !== null && a.subCur !== null;
+  const next = document.getElementById("btn-next");
+  next.disabled = !done;
+  next.innerHTML = i === THEMES.length - 1 ? "See results &rarr;" : "Next &rarr;";
+}
+
+function pickCurrent(themeIdx, part, lv) {
+  const a = state.answers[themeIdx];
+  a[part+"Cur"] = lv;
+  if (a[part+"Tar"] === null || a[part+"Tar"] < lv) a[part+"Tar"] = lv; // target defaults to today
+  renderTheme();
+}
+function pickTarget(themeIdx, part, lv) {
+  const a = state.answers[themeIdx];
+  if (a[part+"Cur"] !== null && lv < a[part+"Cur"]) return;
+  a[part+"Tar"] = lv;
+  renderTheme();
+}
+function nextTheme() {
+  const a = state.answers[state.idx];
+  if (a.mainCur === null || a.subCur === null) return;
+  if (state.idx === THEMES.length - 1) { computeAndShow(); return; }
+  state.idx++; renderTheme();
+}
+function prevTheme() { if (state.idx > 0) { state.idx--; renderTheme(); } }
+
+/* ---- scoring ---- */
+function themeScore(a, which) { // which = 'Cur' or 'Tar'
+  return (a["main"+which] + a["sub"+which]) / 2;
+}
+function avg(arr) { return arr.reduce((s,x)=>s+x,0) / arr.length; }
+function levelFor(score) { return Math.max(1, Math.min(5, Math.round(score))); }
+function gapColor(score) { return score >= 4 ? "var(--good)" : score >= 3 ? "var(--accent)" : score >= 2 ? "var(--warn)" : "var(--bad)"; }
+
+function computeAndShow() { renderResults(state.org, [state.dept, state.role].filter(Boolean).join("  ·  "), state.answers); }
+
+function renderResults(org, metaLine, answers) {
+  const cur = answers.map(a => themeScore(a, "Cur"));
+  const tar = answers.map(a => themeScore(a, "Tar"));
+  const overallNow = avg(cur), overallTar = avg(tar);
+  document.getElementById("res-org").textContent = org + (metaLine ? "  ·  " + metaLine : "");
+  document.getElementById("r-now").textContent = overallNow.toFixed(1);
+  document.getElementById("r-tar").textContent = overallTar.toFixed(1);
+  document.getElementById("r-gap").textContent = "+" + (overallTar-overallNow).toFixed(1);
+  const lvl = levelFor(overallNow);
+  document.getElementById("r-level").textContent = "Level " + lvl + ", " + LEVELS[lvl-1];
+  document.getElementById("r-data-now").textContent = avg(DATA_THEMES.map(i=>cur[i])).toFixed(1);
+  document.getElementById("r-data-tar").textContent = avg(DATA_THEMES.map(i=>tar[i])).toFixed(1);
+  document.getElementById("r-ai-now").textContent = avg(AI_THEMES.map(i=>cur[i])).toFixed(1);
+  document.getElementById("r-ai-tar").textContent = avg(AI_THEMES.map(i=>tar[i])).toFixed(1);
+  const appetite = cur.filter((c,i)=> (tar[i]-c) >= 0.5).length;
+  document.getElementById("r-appetite").textContent = appetite;
+
+  drawRadar(THEMES.map(t=>t.key), cur, tar);
+
+  /* priority table, ranked by gap */
+  const rows = THEMES.map((t,i)=>({ name: t.key, now: cur[i], tar: tar[i], gap: tar[i]-cur[i] }));
+  rows.sort((a,b)=> b.gap - a.gap || a.now - b.now);
+  const tbody = document.getElementById("r-table"); tbody.innerHTML = "";
+  rows.forEach(r => {
+    const gcls = r.gap >= 1 ? "big" : r.gap >= 0.5 ? "mid" : "none";
+    const focus = r.gap >= 1 ? `<span class="focuspill yes">Priority</span>`
+      : r.gap >= 0.5 ? `<span class="focuspill watch">Worth a look</span>`
+      : `<span class="focuspill no">No change wanted</span>`;
+    const tr = document.createElement("tr");
+    if (r.gap < 0.5) tr.className = "flat";
+    tr.innerHTML = `<td>${r.name}</td><td class="num">${r.now.toFixed(1)}</td><td class="num">${r.tar.toFixed(1)}</td>
+      <td class="num gap ${gcls}">${r.gap>0?"+":""}${r.gap.toFixed(1)}</td><td>${focus}</td>`;
+    tbody.appendChild(tr);
+  });
+
+  /* value equation, four-term detail */
+  const veq = document.getElementById("r-veq"); veq.innerHTML = "";
+  VALUE_TERMS.forEach(term => {
+    const cs = avg(term.refs.map(([ti,p])=> answers[ti][p+"Cur"]));
+    const ts = avg(term.refs.map(([ti,p])=> answers[ti][p+"Tar"]));
+    veq.insertAdjacentHTML("beforeend",
+      `<div class="veq-card ${term.group}">
+        <div class="veq-term">${term.name}</div>
+        <div class="veq-desc">${term.desc}</div>
+        <div class="veq-bar"><div class="veq-now" style="width:${cs/5*100}%"></div><div class="veq-tar" style="left:calc(${ts/5*100}% - 1px)"></div></div>
+        <div class="veq-vals">${cs.toFixed(1)} <span>now, target ${ts.toFixed(1)}</span></div>
+      </div>`);
+  });
+
+  /* the three forces: data, artificial intelligence, human intelligence */
+  const refAvg = (refs, w) => avg(refs.map(([ti,p])=> answers[ti][p+w]));
+  const aiRefs = VALUE_TERMS[0].refs, hiRefs = VALUE_TERMS[1].refs;
+  const dataRefs = VALUE_TERMS[2].refs.concat(VALUE_TERMS[3].refs);
+  const forces = [
+    { name: "Artificial intelligence", short: "artificial intelligence", now: refAvg(aiRefs,"Cur"), tar: refAvg(aiRefs,"Tar") },
+    { name: "Human intelligence", short: "human intelligence", now: refAvg(hiRefs,"Cur"), tar: refAvg(hiRefs,"Tar") },
+    { name: "Data", short: "data", now: refAvg(dataRefs,"Cur"), tar: refAvg(dataRefs,"Tar") }
+  ];
+  const lowest = Math.min(...forces.map(f=>f.now));
+  const fbox = document.getElementById("r-forces"); fbox.innerHTML = "";
+  forces.forEach(f => {
+    const weak = f.now <= lowest + 0.001;
+    fbox.insertAdjacentHTML("beforeend",
+      `<div class="force ${weak?'weak':''}">
+        ${weak?'<span class="f-tag">constraint</span>':''}
+        <div class="f-name">${f.name}</div>
+        <div class="f-score">${f.now.toFixed(1)}<small> / 5</small></div>
+        <div class="f-bar"><div class="f-now" style="width:${f.now/5*100}%"></div><div class="f-tar" style="left:calc(${f.tar/5*100}% - 1px)"></div></div>
+      </div>`);
+  });
+
+  /* verdict: name the binding constraint */
+  const weakest = forces.slice().sort((a,b)=>a.now-b.now);
+  const c0 = weakest[0];
+  const alsoWeak = weakest.slice(1).filter(f => f.now - c0.now < 0.3);
+  const NEXT_STEP = {
+    "data": "Strengthen the data first. Better AI and sharper decisions both depend on data people can trust, and that includes the outside data you bring in.",
+    "artificial intelligence": "Your data and people are ahead of your AI. The opportunity is to put them to work through real AI use cases, with the governance and process redesign to match.",
+    "human intelligence": "You have data and tools, but the judgement, skills and adoption to use them well are lagging. Invest in literacy, adoption, and human oversight of AI."
+  };
+  let v = "";
+  if (alsoWeak.length) {
+    const names = [c0.short].concat(alsoWeak.map(f=>f.short));
+    const joined = names.slice(0,-1).join(", ") + " and " + names.slice(-1);
+    v = `Two things are holding you back at once, ${joined}, sitting close together near ${c0.now.toFixed(1)} out of 5. `;
+  } else {
+    v = `Your binding constraint today is <b>${c0.short}</b>, at ${c0.now.toFixed(1)} out of 5. `;
+  }
+  v += `Because value is intelligence applied to data, and the three multiply more than they add, the weakest one caps the value you can create. That is where effort has the most leverage right now. `;
+  v += NEXT_STEP[c0.short];
+  document.getElementById("r-verdict").innerHTML = v;
+
+  /* summary */
+  const gap = overallTar - overallNow;
+  let s = `Today you sit at ${overallNow.toFixed(1)} out of 5, which is Level ${lvl}, ${LEVELS[lvl-1].toLowerCase()}. ${LEVEL_BLURB[lvl]} `;
+  s += gap >= 0.3 ? `Your ambition is ${overallTar.toFixed(1)}, a gap of ${gap.toFixed(1)}, so there is clear appetite to improve. `
+     : `Your target is close to where you are, so the picture is more about holding and refining than transforming. `;
+  const dataNow = avg(DATA_THEMES.map(i=>cur[i])), aiNow = avg(AI_THEMES.map(i=>cur[i]));
+  s += aiNow > dataNow + 0.3 ? "Your AI ambition runs ahead of your data foundations, so strengthening the data is what will let the AI pay off."
+     : dataNow > aiNow + 0.3 ? "Your data foundations are stronger than your AI use, so there is room to put that data to work through AI."
+     : "Your data and AI are moving at a similar pace, which is a healthy balance.";
+  document.getElementById("r-summary").textContent = s;
+
+  const fl = document.getElementById("r-focuslist"); fl.innerHTML = "";
+  const top = rows.filter(r=>r.gap>=0.5).slice(0,3);
+  if (top.length === 0) {
+    fl.innerHTML = `<li>${tick(true)}<span>No theme has a meaningful target gap, so the focus is on sustaining what already works.</span></li>`;
+  } else {
+    top.forEach(r => fl.insertAdjacentHTML("beforeend",
+      `<li>${tick(false)}<span>${r.name}: move from ${r.now.toFixed(1)} toward ${r.tar.toFixed(1)}.</span></li>`));
+  }
+
+  show("results");
+}
+
+function tick(good) {
+  const c = good ? "var(--good)" : "var(--accent-2)";
+  return good
+    ? `<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="${c}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`
+    : `<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="${c}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+}
+
+/* ---- radar chart (self contained SVG) ---- */
+function drawRadar(labels, now, target) {
+  const n = labels.length, size = 420, cx = size/2, cy = size/2, R = 140, maxV = 5;
+  const ns = "http://www.w3.org/2000/svg";
+  const svg = document.createElementNS(ns, "svg");
+  svg.setAttribute("viewBox", `0 0 ${size} ${size}`);
+  svg.setAttribute("width", "100%"); svg.style.maxWidth = size + "px"; svg.style.display = "block"; svg.style.margin = "0 auto";
+  const ang = i => (-90 + i*360/n) * Math.PI/180;
+  const pt = (i, v) => [cx + (v/maxV*R)*Math.cos(ang(i)), cy + (v/maxV*R)*Math.sin(ang(i))];
+
+  for (let ring=1; ring<=maxV; ring++) {
+    const poly = document.createElementNS(ns,"polygon");
+    const pts = labels.map((_,i)=>pt(i,ring).join(",")).join(" ");
+    poly.setAttribute("points", pts);
+    poly.setAttribute("fill", "none");
+    poly.setAttribute("stroke", "#e6e8ef");
+    poly.setAttribute("stroke-width", ring===maxV ? "1.5" : "1");
+    svg.appendChild(poly);
+  }
+  labels.forEach((lab,i)=>{
+    const [x,y] = pt(i, maxV);
+    const line = document.createElementNS(ns,"line");
+    line.setAttribute("x1",cx); line.setAttribute("y1",cy); line.setAttribute("x2",x); line.setAttribute("y2",y);
+    line.setAttribute("stroke","#eef0f6"); line.setAttribute("stroke-width","1");
+    svg.appendChild(line);
+    const [lx,ly] = pt(i, maxV + 0.62);
+    const txt = document.createElementNS(ns,"text");
+    const ca = Math.cos(ang(i));
+    txt.setAttribute("x", lx); txt.setAttribute("y", ly);
+    txt.setAttribute("text-anchor", ca > 0.3 ? "start" : ca < -0.3 ? "end" : "middle");
+    txt.setAttribute("dominant-baseline", "middle");
+    txt.setAttribute("font-size", "10.5"); txt.setAttribute("fill", "#5b6478");
+    txt.setAttribute("font-family", "inherit");
+    wrapLabel(txt, lab, ns);
+    svg.appendChild(txt);
+  });
+  function polygon(vals, fill, stroke, dash) {
+    const poly = document.createElementNS(ns,"polygon");
+    poly.setAttribute("points", vals.map((v,i)=>pt(i,v).join(",")).join(" "));
+    poly.setAttribute("fill", fill); poly.setAttribute("stroke", stroke);
+    poly.setAttribute("stroke-width","2"); poly.setAttribute("stroke-linejoin","round");
+    if (dash) poly.setAttribute("stroke-dasharray","5 4");
+    svg.appendChild(poly);
+  }
+  const accent = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim();
+  const accent2 = getComputedStyle(document.documentElement).getPropertyValue('--accent-2').trim();
+  polygon(target, "none", accent2, true);
+  polygon(now, hexA(accent, 0.18), accent, false);
+  target.forEach((v,i)=>{ const [x,y]=pt(i,v); const c=document.createElementNS(ns,"circle"); c.setAttribute("cx",x);c.setAttribute("cy",y);c.setAttribute("r","2.5");c.setAttribute("fill",accent2); svg.appendChild(c); });
+  now.forEach((v,i)=>{ const [x,y]=pt(i,v); const c=document.createElementNS(ns,"circle"); c.setAttribute("cx",x);c.setAttribute("cy",y);c.setAttribute("r","3");c.setAttribute("fill",accent); svg.appendChild(c); });
+
+  const host = document.getElementById("r-radar"); host.innerHTML = ""; host.appendChild(svg);
+}
+function wrapLabel(txt, label, ns) {
+  const words = label.split(" "); let lines = []; let cur = "";
+  words.forEach(w => { if ((cur + " " + w).trim().length > 12) { lines.push(cur.trim()); cur = w; } else cur += " " + w; });
+  if (cur.trim()) lines.push(cur.trim());
+  const startDy = -(lines.length-1)*5.5;
+  lines.forEach((ln,i)=>{ const ts=document.createElementNS(ns,"tspan"); ts.setAttribute("x", txt.getAttribute("x")); ts.setAttribute("dy", i===0?startDy:11); ts.textContent=ln; txt.appendChild(ts); });
+}
+function hexA(hex, a) {
+  hex = hex.replace('#',''); if (hex.length===3) hex = hex.split('').map(c=>c+c).join('');
+  const r=parseInt(hex.slice(0,2),16), g=parseInt(hex.slice(2,4),16), b=parseInt(hex.slice(4,6),16);
+  return `rgba(${r},${g},${b},${a})`;
+}
+
+/* ---- sample report ---- */
+function showSample() {
+  const now = [3.0,2.5,3.5,2.5,4.0,3.0,2.5,2.5,2.0,2.0];
+  const tar = [4.0,4.0,4.0,3.5,4.5,4.0,4.5,4.5,4.0,4.5];
+  const ans = THEMES.map((t,i)=>({
+    mainCur: Math.round(now[i]), subCur: Math.max(1, Math.round(now[i]*2 - Math.round(now[i]))),
+    mainTar: Math.round(tar[i]), subTar: Math.max(Math.round(now[i]), Math.round(tar[i]*2 - Math.round(tar[i])))
+  }));
+  /* make the pair average land near the intended value */
+  ans.forEach((a,i)=>{ a.mainCur=clampLvl(now[i]); a.subCur=clampLvl(now[i]); a.mainTar=clampLvl(tar[i]); a.subTar=clampLvl(tar[i]); });
+  renderResults("Acme Corporation", "IT or Digital  ·  Executive or Leadership", ans);
+}
+function clampLvl(v){ return Math.max(1, Math.min(5, Math.round(v))); }
+
+/* ---- utilities ---- */
+function copyLink() {
+  const t = location.href;
+  if (navigator.clipboard) navigator.clipboard.writeText(t).then(toast).catch(toast); else toast();
+}
+function toast() { const t=document.getElementById("toast"); t.classList.add("show"); setTimeout(()=>t.classList.remove("show"),1700); }
+document.getElementById("org-name").addEventListener("keydown", e=>{ if(e.key==="Enter") startAssessment(); });
+</script>
+</body>
+</html>
