@@ -105,8 +105,13 @@
   .res-top { display: flex; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; gap: 16px; margin-bottom: 6px; }
   .res-title { font-family: var(--display); font-size: 1.85rem; font-weight: 400; margin: 0; letter-spacing: -0.01em; line-height: 1.15; color: #fff; max-width: 640px; }
   .res-org { color: var(--muted); margin: 6px 0 0; font-size: .92rem; letter-spacing: .02em; }
-  .res-actions { display: flex; gap: 9px; flex-wrap: wrap; }
+  .res-actions { display: flex; gap: 9px; flex-wrap: wrap; align-items: center; }
   .res-actions .btn { width: auto; padding: 11px 17px; font-size: .86rem; }
+  .icon-btn { display: inline-flex; align-items: center; gap: 8px; }
+  .icon-btn svg { width: 16px; height: 16px; }
+  .btn-icon { display: inline-flex; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: 12px; border: 1px solid var(--line-2); background: rgba(255,255,255,.04); color: var(--ink); cursor: pointer; transition: background .14s, border-color .14s; }
+  .btn-icon:hover { background: rgba(255,255,255,.09); border-color: var(--purple); color: var(--purple-light); }
+  .btn-icon svg { width: 19px; height: 19px; }
   .grid { display: grid; gap: 18px; }
   .tiles { grid-template-columns: repeat(4, 1fr); margin-top: 20px; }
   .panel { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 24px 26px; box-shadow: 0 20px 50px -30px rgba(0,0,0,.7); }
@@ -340,9 +345,8 @@
       <p class="res-org" id="res-org">Organisation</p>
     </div>
     <div class="res-actions">
-      <button class="btn btn-ghost" onclick="copyLink()">Copy link</button>
-      <button class="btn btn-ghost" onclick="window.print()">Print or PDF</button>
-      <button class="btn btn-primary" onclick="goHome()">Back to start</button>
+      <button class="btn btn-ghost icon-btn" onclick="window.print()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="M7 11l5 5 5-5"/><path d="M5 21h14"/></svg> Download</button>
+      <button class="btn-icon" onclick="goHome()" aria-label="Back to home" title="Back to home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M9 20v-6h6v6"/></svg></button>
     </div>
   </div>
 
