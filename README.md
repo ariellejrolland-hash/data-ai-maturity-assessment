@@ -1,20 +1,23 @@
 # Data and AI Maturity Assessment
 
-An internal self-assessment of where a team stands today, and where it wants to be, across data and AI. Powered by Arielle Rolland Advisory.
+An internal diagnostic of where a team stands today, and where it wants to be, across data and AI. Powered by Arielle Rolland Advisory.
 
 ## Pages
 
-- **index.html** — the assessment tool (dark, AR Advisory brand): ten themes, current vs target, value-equation verdict, foundations-first wave roadmap, recommendations, and notes.
-- **assessment.html** — a lighter, navigator-style design preview: statement questions in plain language with a top theme navigator, a target and importance question per item, side notes, and small live side visuals. Three themes are interactive in this preview.
-- **enterprise.html** — the enterprise (Level 2) report: a two-level diagnostic that rolls many responses up by business unit, with a maturity heatmap, unit comparison, alignment gaps, and priorities weighted by what matters. Illustrative sample data.
+- **assessment.html** — the assessment. Ten themes in plain language, a top navigator, statement questions on a 1 to 5 scale, a target and an importance question per item, and notes per theme. Ends in a full report: overall maturity, data and AI readiness, a current-versus-target radar, a value-equation verdict that names whether the constraint is data, AI, or people, a foundations-first roadmap with recommendations on hover, and a Download my responses button.
+- **enterprise.html** — the enterprise (Level 2) report. Import the response files people download at the end of the assessment, and it rolls them up by business unit: a maturity heatmap, unit comparison, alignment gaps, and priorities weighted by what matters. Shows sample data until you import real responses.
+- **index.html** — an earlier dark-themed single-page version of the assessment.
 
-## Use
+## How it works
 
-Open any page in a browser. Each is a single self-contained file with no install and no server.
+1. Each person opens **assessment.html**, answers tagged by department and role, sees their own report, and clicks Download my responses to save a small file.
+2. A facilitator opens **enterprise.html** and imports those files. They group by department automatically into the enterprise view.
+
+Everything is self-contained: single HTML files, no install, no server, no data leaves the browser.
 
 ## The two-level model
 
-A capability diagnostic is multi-respondent. Each person answers tagged by department and role, which gives two reports: a department or owner view, and an enterprise view broken down per business unit, where central tendency, agreement, and materiality together point to where to act first.
+A capability diagnostic is multi-respondent. The same answers read two ways: a department or owner view, and an enterprise view per business unit, where central tendency, agreement, and materiality together point to where to act first.
 
 ---
 
