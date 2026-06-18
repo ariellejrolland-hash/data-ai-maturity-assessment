@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Enterprise maturity report</title>
+<title>Maturity report</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -13,11 +13,13 @@
     --bg:#FAF8F4; --surface:#ffffff; --surface-2:#FBF9FE;
     --ink:#1B1426; --muted:#6E6684; --faint:#A39FB2;
     --line:#ECE7F1; --line-2:#E2DCEC; --chip:#F4EEFC; --chip-ink:#7a33c9;
+    --good:#16a34a; --warn:#d97706;
     --display:'DM Serif Display', Georgia, serif; --body:'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   }
   * { box-sizing: border-box; }
   html, body { margin: 0; padding: 0; }
   body { font-family: var(--body); background: var(--bg); color: var(--ink); line-height: 1.55; -webkit-font-smoothing: antialiased; }
+  .hidden { display: none !important; }
   .wrap { max-width: 1120px; margin: 0 auto; padding: 26px 24px 80px; }
   header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; }
   .brand { display: flex; align-items: center; gap: 12px; }
@@ -32,35 +34,78 @@
   .ibtn.primary { background: var(--grad); color: #fff; border: none; }
   .ibtn svg { width: 16px; height: 16px; }
 
-  .kpis { display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; margin: 22px 0 8px; }
+  .switch { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin: 20px 0 4px; }
+  .sw-lab { font-size: .74rem; text-transform: uppercase; letter-spacing: .08em; color: var(--faint); font-weight: 600; margin-right: 4px; }
+  .sw-tab { padding: 8px 14px; border: 1px solid var(--line-2); border-radius: 999px; background: #fff; cursor: pointer; font-family: inherit; font-weight: 600; font-size: .83rem; color: var(--muted); }
+  .sw-tab:hover { border-color: var(--purple); color: var(--ink); }
+  .sw-tab.active { background: var(--ink); color: #fff; border-color: var(--ink); }
+  .sw-tab.ent.active { background: var(--grad); border: none; }
+
+  .kpis { display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; margin: 18px 0 8px; }
   .kpi { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 18px 20px; box-shadow: 0 6px 22px -16px rgba(27,20,38,.4); }
   .kpi .k-lab { font-size: .72rem; font-weight: 600; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); }
   .kpi .k-val { font-family: var(--display); font-size: 2rem; line-height: 1.1; margin-top: 5px; } .kpi .k-val small { font-size: .9rem; color: var(--faint); font-family: var(--body); }
   .kpi .k-sub { font-size: .82rem; color: var(--muted); margin-top: 3px; }
   .kpi.hero { background: var(--grad); border: none; color: #fff; } .kpi.hero .k-lab, .kpi.hero .k-sub { color: rgba(255,255,255,.85); } .kpi.hero .k-val small { color: rgba(255,255,255,.75); }
 
-  .section-label { font-family: var(--display); font-size: 1.3rem; margin: 34px 0 6px; }
+  .section-label { font-family: var(--display); font-size: 1.3rem; margin: 32px 0 6px; }
   .section-sub { color: var(--muted); font-size: .88rem; margin: 0 0 14px; }
   .panel { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 20px 22px; box-shadow: 0 6px 22px -16px rgba(27,20,38,.4); }
+  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  .two-col { display: grid; grid-template-columns: 1.05fr .95fr; gap: 20px; align-items: center; }
+
+  /* heatmap */
   .hm { display: grid; gap: 6px; }
   .hm-row { display: grid; gap: 6px; align-items: center; }
   .hm-head { font-size: .72rem; font-weight: 700; color: var(--muted); text-align: center; padding: 4px 2px; text-transform: uppercase; letter-spacing: .02em; }
   .hm-head.first { text-align: left; } .hm-head.ent { color: var(--purple-deep); }
+  .hm-head.click { cursor: pointer; } .hm-head.click:hover { color: var(--purple); text-decoration: underline; }
   .hm-theme { font-size: .85rem; font-weight: 500; display: flex; align-items: center; gap: 7px; }
   .hm-theme .wv { font-size: .58rem; font-weight: 700; padding: 2px 6px; border-radius: 999px; }
   .wv1 { background: rgba(250,95,9,.16); color: #b2400f; } .wv2 { background: rgba(151,71,239,.16); color: var(--purple-deep); } .wv3 { background: #EEEAF2; color: var(--muted); }
   .cell { height: 42px; border-radius: 9px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: .92rem; border: 1px solid transparent; } .cell.ent { border: 1px dashed var(--purple); } .cell.na { background: #F4F2F7; color: var(--faint); font-weight: 500; }
-  .legend { display: flex; gap: 16px; align-items: center; font-size: .78rem; color: var(--muted); margin-top: 14px; flex-wrap: wrap; } .legend .sw { display: inline-flex; align-items: center; gap: 6px; } .legend .sw i { width: 16px; height: 12px; border-radius: 3px; }
-  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
-  .rank { list-style: none; margin: 0; padding: 0; } .rank li { display: flex; align-items: center; gap: 12px; padding: 11px 0; border-bottom: 1px solid var(--line); } .rank li:last-child { border: none; }
-  .rank .nm { font-weight: 600; flex: 1; } .rank .ba { width: 110px; height: 8px; background: var(--line); border-radius: 999px; overflow: hidden; } .rank .ba i { display: block; height: 100%; background: var(--grad); } .rank .vv { font-variant-numeric: tabular-nums; font-weight: 700; width: 34px; text-align: right; }
+  .legend { display: flex; gap: 16px; align-items: center; font-size: .78rem; color: var(--muted); margin-top: 14px; flex-wrap: wrap; } .legend .sw2 { display: inline-flex; align-items: center; gap: 6px; } .legend .sw2 i { width: 16px; height: 12px; border-radius: 3px; }
+
+  .rank { list-style: none; margin: 0; padding: 0; } .rank li { display: flex; align-items: center; gap: 12px; padding: 11px 0; border-bottom: 1px solid var(--line); cursor: pointer; } .rank li:last-child { border: none; } .rank li:hover .nm { color: var(--purple); }
+  .rank .nm { font-weight: 600; flex: 1; } .rank .ba { width: 100px; height: 8px; background: var(--line); border-radius: 999px; overflow: hidden; } .rank .ba i { display: block; height: 100%; background: var(--grad); } .rank .vv { font-variant-numeric: tabular-nums; font-weight: 700; width: 30px; text-align: right; } .rank .go { color: var(--faint); }
   .align-item { padding: 11px 0; border-bottom: 1px solid var(--line); } .align-item:last-child { border: none; } .align-item .ai-t { font-weight: 600; font-size: .92rem; } .align-item .ai-s { font-size: .82rem; color: var(--muted); } .align-item .ai-s b { color: var(--orange); }
   ol.prio { list-style: none; margin: 0; padding: 0; } ol.prio li { padding: 14px 0; border-bottom: 1px solid var(--line); } ol.prio li:last-child { border: none; }
   .pr-top { display: flex; align-items: center; gap: 11px; flex-wrap: wrap; } .pr-num { width: 26px; height: 26px; border-radius: 50%; background: var(--grad); color: #fff; font-weight: 700; font-size: .82rem; display: flex; align-items: center; justify-content: center; } .pr-name { font-weight: 600; }
   .pr-tags { display: flex; gap: 7px; font-size: .72rem; } .pr-tag { padding: 3px 9px; border-radius: 999px; background: var(--surface-2); border: 1px solid var(--line); color: var(--muted); font-weight: 600; } .pr-rec { color: var(--muted); font-size: .88rem; margin-top: 6px; padding-left: 37px; }
-  .pop { position: absolute; z-index: 60; max-width: 250px; background: var(--ink); color: #fff; border-radius: 12px; padding: 12px 14px; font-size: .82rem; line-height: 1.5; box-shadow: 0 16px 40px -12px rgba(0,0,0,.4); pointer-events: none; } .pop .ph { font-weight: 600; margin-bottom: 6px; } .pop .pr { display: flex; justify-content: space-between; gap: 14px; color: #D7D0E4; } .pop .pr span:last-child { color: #fff; font-weight: 600; }
+
+  /* domain report */
+  .back { display: inline-flex; align-items: center; gap: 7px; background: none; border: none; color: var(--purple-deep); font-family: inherit; font-weight: 600; font-size: .86rem; cursor: pointer; padding: 0; margin-bottom: 6px; }
+  .back svg { width: 16px; height: 16px; }
+  .u-title { font-family: var(--display); font-size: 1.7rem; margin: 4px 0 2px; }
+  .u-sub { color: var(--muted); font-size: .9rem; }
+  .tiles { display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; margin: 18px 0 6px; }
+  .tile2 { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 18px 20px; box-shadow: 0 6px 22px -16px rgba(27,20,38,.4); }
+  .tile2 .t-lab { font-size: .72rem; font-weight: 600; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); }
+  .tile2 .t-now { font-family: var(--display); font-size: 2rem; line-height: 1.1; margin-top: 5px; } .tile2 .t-now small { font-size: .85rem; color: var(--faint); font-family: var(--body); }
+  .tile2 .t-arrow { font-size: .82rem; color: var(--muted); margin-top: 4px; } .tile2 .t-arrow b { color: var(--orange); }
+  .tile2.hero { background: var(--grad); border: none; color: #fff; } .tile2.hero .t-lab, .tile2.hero .t-arrow { color: rgba(255,255,255,.85); } .tile2.hero .t-now small { color: rgba(255,255,255,.7); } .tile2.hero .t-arrow b { color: #fff; }
+  .level-pill { display:inline-block; margin-top: 8px; background: rgba(255,255,255,.2); padding: 5px 12px; border-radius: 999px; font-weight: 600; font-size: .78rem; }
+  .legend3 { display: flex; gap: 18px; font-size: .82rem; color: var(--muted); margin-top: 8px; } .legend3 i { display:inline-block; width: 14px; height: 14px; border-radius: 4px; margin-right: 6px; vertical-align: -2px; } .legend3 .now i { background: var(--purple); } .legend3 .tar i { background: transparent; border: 2px solid var(--orange); }
+  .forces { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; margin: 4px 0 16px; }
+  .force { border: 1px solid var(--line); border-radius: 14px; padding: 16px; position: relative; background: var(--surface-2); }
+  .force.weak { border-color: var(--orange); background: #FFF4EE; }
+  .force .f-name { font-weight: 600; font-size: .95rem; } .force .f-score { font-family: var(--display); font-size: 2rem; line-height: 1.1; } .force .f-score small { font-size: .82rem; color: var(--faint); font-family: var(--body); }
+  .force .f-tag { position: absolute; top: 14px; right: 14px; font-size: .64rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--orange); }
+  .force .f-bar { height: 8px; background: var(--line); border-radius: 999px; position: relative; margin-top: 10px; } .force .f-now { position: absolute; left:0; top:0; height: 100%; border-radius: 999px; background: var(--grad); } .force .f-tar { position: absolute; top: -4px; width: 3px; height: 16px; background: var(--orange); border-radius: 2px; }
+  .verdict { font-size: 1rem; line-height: 1.6; background: var(--chip); border: 1px solid #E3D4F7; border-radius: 14px; padding: 16px 18px; } .verdict b { color: var(--ink); }
+  .verdict-next { margin-top: 12px; padding-top: 12px; border-top: 1px solid #E3D4F7; } .vn-lab { display: inline-block; font-size: .64rem; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: #fff; background: var(--grad); padding: 3px 9px; border-radius: 999px; margin-right: 8px; vertical-align: 1px; }
+  ol.nextsteps { list-style: none; margin: 0; padding: 0; } ol.nextsteps li { padding: 14px 0; border-bottom: 1px solid var(--line); } ol.nextsteps li:last-child { border: none; }
+  .ns-top { display: flex; align-items: center; gap: 11px; flex-wrap: wrap; margin-bottom: 6px; } .ns-num { width: 26px; height: 26px; border-radius: 50%; background: var(--grad); color: #fff; font-weight: 700; font-size: .82rem; display: flex; align-items: center; justify-content: center; } .ns-name { font-weight: 600; } .ns-rec { color: var(--muted); font-size: .9rem; padding-left: 37px; }
+  .wavetag { display: inline-block; padding: 3px 9px; border-radius: 999px; font-size: .7rem; font-weight: 700; } .wavetag.w1 { background: rgba(250,95,9,.16); color: #b2400f; } .wavetag.w2 { background: rgba(151,71,239,.16); color: var(--purple-deep); } .wavetag.w3 { background: #EEEAF2; color: var(--muted); }
+  .roadmap { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; }
+  .road-stage { background: var(--surface-2); border: 1px solid var(--line); border-radius: 16px; padding: 16px; }
+  .road-head { display: flex; align-items: center; gap: 11px; margin-bottom: 12px; } .road-badge { width: 30px; height: 30px; border-radius: 9px; background: var(--grad); color: #fff; font-weight: 700; display: flex; align-items: center; justify-content: center; font-family: var(--display); } .road-wave { font-size: .66rem; text-transform: uppercase; letter-spacing: .1em; color: var(--purple-deep); font-weight: 600; } .road-name { font-weight: 600; font-size: .95rem; }
+  .road-chips { display: flex; flex-direction: column; gap: 8px; } .road-chip { display: flex; align-items: center; justify-content: space-between; gap: 10px; width: 100%; text-align: left; padding: 9px 12px; border: 1px solid var(--line); border-left: 3px solid var(--line-2); border-radius: 10px; background: #fff; color: var(--ink); cursor: pointer; font-family: inherit; font-size: .85rem; } .road-chip:hover { background: var(--surface-2); } .road-chip.low { border-left-color: var(--orange); } .road-chip.mid { border-left-color: var(--warn); } .road-chip.ok { border-left-color: var(--good); } .rc-score { font-variant-numeric: tabular-nums; color: var(--muted); font-weight: 700; }
+  .compare { font-size: .9rem; color: var(--muted); line-height: 1.6; } .compare b { color: var(--ink); }
+
+  .pop { position: absolute; z-index: 60; max-width: 270px; background: var(--ink); color: #fff; border-radius: 12px; padding: 12px 14px; font-size: .82rem; line-height: 1.5; box-shadow: 0 16px 40px -12px rgba(0,0,0,.4); } .pop .ph { font-weight: 600; margin-bottom: 6px; } .pop .pr { display: flex; justify-content: space-between; gap: 14px; color: #D7D0E4; } .pop .pr span:last-child { color: #fff; font-weight: 600; }
   .foot { color: var(--faint); font-size: .8rem; text-align: center; margin-top: 30px; }
-  @media (max-width: 880px) { .kpis { grid-template-columns: 1fr 1fr; } .two { grid-template-columns: 1fr; } }
+  @media (max-width: 880px) { .kpis, .tiles { grid-template-columns: 1fr 1fr; } .two, .two-col, .forces, .roadmap { grid-template-columns: 1fr; } }
 </style>
 </head>
 <body>
@@ -68,7 +113,7 @@
 <header>
   <div class="brand">
     <div class="mark"><svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#9747EF"/><stop offset="1" stop-color="#FA5F09"/></linearGradient></defs><polygon points="50,10 86,30 86,70 50,90 14,70 14,30" fill="none" stroke="url(#g)" stroke-width="4" stroke-linejoin="round"/><text x="50" y="60" text-anchor="middle" font-family="Georgia, serif" font-size="30" font-weight="bold" fill="url(#g)">AR</text></svg></div>
-    <div><div class="wm">Arielle Rolland Advisory</div><div class="ti">Enterprise maturity report</div></div>
+    <div><div class="wm">Arielle Rolland Advisory</div><div class="ti">Maturity report</div></div>
   </div>
   <div class="imp">
     <span class="imp-status" id="imp-status">Showing sample data</span>
@@ -77,73 +122,92 @@
     <button class="ibtn" onclick="loadSample()">Sample data</button>
   </div>
 </header>
-<p class="section-sub" style="margin-top:8px;">Drop in the response files people download at the end of their assessment. They are grouped by the department each person chose. <b id="scope">26 responses across 4 business units</b></p>
+<p class="section-sub" style="margin-top:8px;">One connected report. Start at the enterprise level, then open any department to see its own report. <b id="scope"></b></p>
 
-<div class="kpis" id="kpis"></div>
+<div class="switch" id="switch"></div>
 
-<div class="section-label">Maturity heatmap</div>
-<p class="section-sub">Each theme by business unit, scored 1 to 5. Hover any cell for today versus target, how much it matters, and how much the unit agrees. The dashed column is the enterprise average.</p>
-<div class="panel"><div class="hm" id="hm"></div>
-  <div class="legend"><span class="sw"><i style="background:#FBE4D8"></i>Below 2.5</span><span class="sw"><i style="background:#FBF1DA"></i>2.5 to 3.4</span><span class="sw"><i style="background:#E4F3E9"></i>3.5 to 4.1</span><span class="sw"><i style="background:#CFECD8"></i>4.2 and up</span></div>
+<div id="ent-view">
+  <div class="kpis" id="kpis"></div>
+  <div class="section-label">Maturity heatmap</div>
+  <p class="section-sub">Each theme by business unit. Click a department name to open its report. Hover a cell for detail. The dashed column is the enterprise average.</p>
+  <div class="panel"><div class="hm" id="hm"></div>
+    <div class="legend"><span class="sw2"><i style="background:#FBE4D8"></i>Below 2.5</span><span class="sw2"><i style="background:#FBF1DA"></i>2.5 to 3.4</span><span class="sw2"><i style="background:#E4F3E9"></i>3.5 to 4.1</span><span class="sw2"><i style="background:#CFECD8"></i>4.2 and up</span></div>
+  </div>
+  <div class="section-label">How the units compare</div>
+  <div class="two">
+    <div class="panel"><p class="section-sub" style="margin-top:0;">Overall maturity by unit. Click to open the department report.</p><ul class="rank" id="leaders"></ul></div>
+    <div class="panel"><p class="section-sub" style="margin-top:0;">Where units disagree most. Low agreement is itself a finding.</p><div id="align"></div></div>
+  </div>
+  <div class="section-label">Strategic priorities, weighted by what matters</div>
+  <p class="section-sub">Ranked by importance multiplied by the gap to target, with foundations first.</p>
+  <div class="panel"><ol class="prio" id="prio"></ol></div>
 </div>
 
-<div class="section-label">How the units compare</div>
-<div class="two">
-  <div class="panel"><p class="section-sub" style="margin-top:0;">Overall maturity by unit, leaders to laggards.</p><ul class="rank" id="leaders"></ul></div>
-  <div class="panel"><p class="section-sub" style="margin-top:0;">Where units disagree most. Low agreement is itself a finding.</p><div id="align"></div></div>
-</div>
+<div id="unit-view" class="hidden"></div>
 
-<div class="section-label">Strategic priorities, weighted by what matters</div>
-<p class="section-sub">Ranked by importance multiplied by the gap to target, so effort goes where it both matters and falls short, with foundations first.</p>
-<div class="panel"><ol class="prio" id="prio"></ol></div>
-
-<p class="foot" id="foot">Sample data shown. Import response files to see your own enterprise picture.</p>
+<p class="foot" id="foot"></p>
 </div>
 <div id="pop" class="pop" style="display:none"></div>
 
 <script>
 const THEMES = ["Data ownership and direction","Trustworthy data","Finding and understanding data","Systems and connections","Security and compliance","Insight and confidence","AI strategy and value","Governing AI","AI skills and adoption","Process and agents"];
 const NTHEME = THEMES.length;
-const WAVES = [1,1,2,1,1,2,3,3,3,3]; const WLAB = {1:"Wave 1",2:"Wave 2",3:"Wave 3"};
+const LEVELS = ["Initial","Developing","Defined","Managed","Optimised"];
+const WAVES = [1,1,2,1,1,2,3,3,3,3]; const WLAB = {1:"Wave 1",2:"Wave 2",3:"Wave 3"}; const WNAME = {1:"Foundations",2:"Make data usable",3:"Scale AI"};
+const DATA_THEMES=[0,1,2,3,4,5], AI_THEMES=[6,7,8,9];
+const FORCE_THEMES = { "data":[0,1,2,3], "artificial intelligence":[6,7,9], "human intelligence":[5,8] };
+const NEXT_STEP = { "data":"Strengthen the data first. Better AI and sharper decisions both depend on data people can trust.", "artificial intelligence":"Data and people are ahead of AI here. Put them to work through real use cases, with governance to match.", "human intelligence":"There is data and tooling, but the skills, judgement and adoption lag. Invest in literacy, adoption and oversight." };
 const RECS = ["Name owners for each major data domain and agree a short data strategy.","Agree what good looks like for key data and add automated quality checks.","Stand up a simple catalogue with plain definitions and owners.","Replace the most fragile manual hand-offs with reliable, monitored connections.","Set role-based access, protect sensitive data, and run regular access reviews.","Standardise a few trusted reports and add basic data-literacy training.","Pick two or three high-value use cases with a senior owner and a measurable outcome.","Keep a register of AI uses with owners and risk ratings, and review before go-live.","Offer practical, role-based AI training and a small set of approved tools.","Document and standardise key processes before automating them."];
 
-let G = null;
+/* department standardisation */
+const DEPT_ALIASES = {
+  "supply chain":"Supply Chain or Operations","supply chain or operations":"Supply Chain or Operations","supply chain ops":"Supply Chain or Operations","supply chain operations":"Supply Chain or Operations","sc":"Supply Chain or Operations","operations":"Supply Chain or Operations","ops":"Supply Chain or Operations","supply":"Supply Chain or Operations","scm":"Supply Chain or Operations","supply ops":"Supply Chain or Operations",
+  "quality":"Quality","qa":"Quality","quality assurance":"Quality","qc":"Quality",
+  "commercial":"Commercial or Sales","commercial or sales":"Commercial or Sales","sales":"Commercial or Sales","commercial sales":"Commercial or Sales",
+  "marketing":"Marketing","mktg":"Marketing",
+  "manufacturing":"Manufacturing","mfg":"Manufacturing","production":"Manufacturing",
+  "regulatory":"Regulatory Affairs","regulatory affairs":"Regulatory Affairs","ra":"Regulatory Affairs","reg":"Regulatory Affairs",
+  "r d":"R&D or Clinical","rd":"R&D or Clinical","research":"R&D or Clinical","clinical":"R&D or Clinical","r d or clinical":"R&D or Clinical","research and development":"R&D or Clinical","r&d":"R&D or Clinical",
+  "finance":"Finance","fin":"Finance",
+  "hr":"HR or People","people":"HR or People","human resources":"HR or People","hr or people":"HR or People",
+  "it":"IT or Digital","digital":"IT or Digital","it or digital":"IT or Digital","information technology":"IT or Digital","tech":"IT or Digital","technology":"IT or Digital","is":"IT or Digital"
+};
+function stdDept(raw){
+  let s=(raw||"Unknown").trim().replace(/\s+/g," ");
+  if(!s) s="Unknown";
+  let key=s.toLowerCase().replace(/[.\-_/&]/g," ").replace(/\s+/g," ").trim();
+  if(DEPT_ALIASES[key]) return DEPT_ALIASES[key];
+  return s.replace(/\w\S*/g, w=> w.charAt(0).toUpperCase()+w.slice(1).toLowerCase());
+}
+
+let G=null, VIEW={type:"ent"};
 function mean(a){ return a.reduce((x,y)=>x+y,0)/a.length; }
 function std(a){ const m=mean(a); return Math.sqrt(mean(a.map(x=>(x-m)*(x-m)))); }
+function levelOf(s){ return Math.max(1,Math.min(5,Math.round(s))); }
+function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
 
-/* sample */
 function buildSample(){
-  const units=["Supply Chain","Quality","Commercial","IT"], NU=[8,6,7,5];
+  const units=["Supply Chain or Operations","Quality","Commercial or Sales","IT or Digital"], NU=[8,6,7,5];
   const CUR=[[3.2,3.6,2.8,3.0],[3.4,3.8,2.9,3.1],[2.8,3.0,2.6,3.4],[3.0,3.1,2.9,4.0],[3.3,3.7,3.0,4.1],[2.9,3.0,3.6,3.2],[2.2,2.4,2.6,2.8],[2.0,2.6,2.1,2.7],[2.1,2.2,2.5,2.6],[2.3,2.5,2.2,2.6]];
   const IMP=[[2,2,1,2],[2,2,2,2],[1,1,1,2],[2,1,1,2],[2,2,1,2],[1,1,2,1],[1,1,2,2],[1,2,1,2],[1,1,2,2],[1,1,1,2]];
   const SD=[[.4,.3,.7,.4],[.3,.3,.5,.4],[.5,.4,.6,.3],[.4,.4,.5,.3],[.3,.3,.6,.3],[.5,.4,.4,.5],[.7,.6,.5,.6],[.6,.5,.7,.5],[.6,.6,.5,.5],[.7,.6,.6,.5]];
   const TAR=CUR.map((row,ti)=> row.map(v=> Math.min(5, v+(WAVES[ti]===3?1.6:0.7))));
   return { units, NU, CUR, TAR, IMP01: IMP.map(r=>r.map(v=>v/2)), SD, total: NU.reduce((a,b)=>a+b), sample:true };
 }
-
-/* aggregate from imported responses */
-function rTheme(ans, ti){
-  let curs=[], tars=[], nps=0, tot=0;
-  for(let qi=0; qi<3; qi++){ const a=ans[ti+"_"+qi]; if(a && a.cur){ curs.push(a.cur); tars.push(a.np?a.cur:(a.tar||a.cur)); tot++; if(a.np)nps++; } }
-  if(!curs.length) return null;
-  return { cur: mean(curs), tar: mean(tars), imp: 1-(nps/tot) };
-}
+function rTheme(ans, ti){ let curs=[],tars=[],nps=0,tot=0; for(let qi=0;qi<3;qi++){ const a=ans[ti+"_"+qi]; if(a&&a.cur){ curs.push(a.cur); tars.push(a.np?a.cur:(a.tar||a.cur)); tot++; if(a.np)nps++; } } return curs.length? {cur:mean(curs),tar:mean(tars),imp:1-(nps/tot)} : null; }
 function buildFromResponses(resps){
-  const units=[...new Set(resps.map(r=>r.dept||"Unknown"))].sort();
-  const NU=units.map(u=> resps.filter(r=>(r.dept||"Unknown")===u).length);
-  const CUR=[], TAR=[], IMP01=[], SD=[];
-  for(let ti=0; ti<NTHEME; ti++){ CUR[ti]=[]; TAR[ti]=[]; IMP01[ti]=[]; SD[ti]=[];
-    units.forEach((u,ui)=>{
-      const rs=resps.filter(r=>(r.dept||"Unknown")===u).map(r=>rTheme(r.answers||{}, ti)).filter(Boolean);
-      if(!rs.length){ CUR[ti][ui]=0; TAR[ti][ui]=0; IMP01[ti][ui]=0; SD[ti][ui]=null; return; }
-      const cs=rs.map(x=>x.cur);
-      CUR[ti][ui]=mean(cs); TAR[ti][ui]=mean(rs.map(x=>x.tar)); IMP01[ti][ui]=mean(rs.map(x=>x.imp)); SD[ti][ui]= cs.length>1?std(cs):null;
-    });
+  resps.forEach(r=> r._u = stdDept(r.dept));
+  const units=[...new Set(resps.map(r=>r._u))].sort();
+  const NU=units.map(u=> resps.filter(r=>r._u===u).length);
+  const CUR=[],TAR=[],IMP01=[],SD=[];
+  for(let ti=0; ti<NTHEME; ti++){ CUR[ti]=[];TAR[ti]=[];IMP01[ti]=[];SD[ti]=[];
+    units.forEach((u,ui)=>{ const rs=resps.filter(r=>r._u===u).map(r=>rTheme(r.answers||{},ti)).filter(Boolean);
+      if(!rs.length){ CUR[ti][ui]=0;TAR[ti][ui]=0;IMP01[ti][ui]=0;SD[ti][ui]=null; return; }
+      const cs=rs.map(x=>x.cur); CUR[ti][ui]=mean(cs); TAR[ti][ui]=mean(rs.map(x=>x.tar)); IMP01[ti][ui]=mean(rs.map(x=>x.imp)); SD[ti][ui]=cs.length>1?std(cs):null; });
   }
-  return { units, NU, CUR, TAR, IMP01, SD, total: resps.length, sample:false };
+  return { units, NU, CUR, TAR, IMP01, SD, total:resps.length, sample:false };
 }
 
-/* enterprise aggregates */
 function entCur(ti){ let s=0,n=0; G.units.forEach((u,ui)=>{ if(G.NU[ui]){ s+=G.CUR[ti][ui]*G.NU[ui]; n+=G.NU[ui]; } }); return n?s/n:0; }
 function entTar(ti){ let s=0,n=0; G.units.forEach((u,ui)=>{ if(G.NU[ui]){ s+=G.TAR[ti][ui]*G.NU[ui]; n+=G.NU[ui]; } }); return n?s/n:0; }
 function entImp(ti){ let s=0,n=0; G.units.forEach((u,ui)=>{ if(G.NU[ui]){ s+=G.IMP01[ti][ui]*G.NU[ui]; n+=G.NU[ui]; } }); return n?s/n:0; }
@@ -151,61 +215,134 @@ function unitAvg(ui){ return mean(THEMES.map((_,ti)=>G.CUR[ti][ui])); }
 function cellStyle(v){ if(v<2.5)return["#FBE4D8","#B23C13"]; if(v<3.5)return["#FBF1DA","#8A6516"]; if(v<4.2)return["#E4F3E9","#1B7A3F"]; return["#CFECD8","#0F6B33"]; }
 function impLab(x){ return x>=0.67?"High":x>=0.34?"Medium":"Low"; }
 function consLab(sd){ if(sd===null||sd===undefined)return "One response"; return sd>=0.9?"Low, they disagree":sd>=0.5?"Mixed":"High"; }
+function entPriorities(){ return THEMES.map((th,ti)=>({name:th,idx:ti,wave:WAVES[ti],gap:entTar(ti)-entCur(ti),imp:entImp(ti),cur:entCur(ti),score:entImp(ti)*(entTar(ti)-entCur(ti))})).sort((a,b)=>(a.wave-b.wave)||(b.score-a.score)); }
 
-function priorities(){
-  return THEMES.map((th,ti)=>({ name:th, idx:ti, wave:WAVES[ti], gap:entTar(ti)-entCur(ti), imp:entImp(ti), cur:entCur(ti), score:entImp(ti)*(entTar(ti)-entCur(ti)) }))
-    .sort((a,b)=> (a.wave-b.wave) || (b.score-a.score));
+/* ---- top switcher ---- */
+function renderSwitch(){
+  const s=document.getElementById("switch");
+  let h=`<span class="sw-lab">View</span><button class="sw-tab ent ${VIEW.type==="ent"?"active":""}" onclick="setEnt()">Enterprise</button>`;
+  h+=G.units.map((u,ui)=>`<button class="sw-tab ${VIEW.type==="unit"&&VIEW.ui===ui?"active":""}" onclick="setUnit(${ui})">${esc(u)}</button>`).join("");
+  s.innerHTML=h;
+}
+function setEnt(){ VIEW={type:"ent"}; render(); }
+function setUnit(ui){ VIEW={type:"unit",ui}; render(); }
+
+function render(){
+  document.getElementById("scope").textContent = `${G.total} response${G.total===1?"":"s"} across ${G.units.length} business unit${G.units.length===1?"":"s"}.` + (G.sample?"":" Departments standardised on import.");
+  document.getElementById("imp-status").textContent = G.sample ? "Showing sample data" : `${G.total} responses loaded`;
+  document.getElementById("foot").textContent = G.sample ? "Sample data shown. Import response files to see your own picture." : "Your enterprise picture, grouped by department.";
+  renderSwitch();
+  const ent=VIEW.type==="ent";
+  document.getElementById("ent-view").classList.toggle("hidden", !ent);
+  document.getElementById("unit-view").classList.toggle("hidden", ent);
+  if(ent) renderEnterprise(); else renderUnit(VIEW.ui);
+  window.scrollTo({top:0,behavior:"smooth"});
 }
 
-function renderAll(){
-  document.getElementById("scope").textContent = `${G.total} response${G.total===1?"":"s"} across ${G.units.length} business unit${G.units.length===1?"":"s"}`;
-  document.getElementById("imp-status").textContent = G.sample ? "Showing sample data" : `${G.total} responses loaded`;
-  document.getElementById("foot").textContent = G.sample ? "Sample data shown. Import response files to see your own enterprise picture." : "Your enterprise picture, grouped by department.";
-  /* kpis */
+function renderEnterprise(){
   const entAll=mean(THEMES.map((_,t)=>entCur(t))), tarAll=mean(THEMES.map((_,t)=>entTar(t)));
-  const lead=G.units.map((u,i)=>({u,v:unitAvg(i)})).sort((a,b)=>b.v-a.v);
-  const p0=priorities()[0];
+  const lead=G.units.map((u,i)=>({u,ui:i,v:unitAvg(i)})).sort((a,b)=>b.v-a.v);
+  const p0=entPriorities()[0];
   document.getElementById("kpis").innerHTML=`
     <div class="kpi hero"><div class="k-lab">Enterprise maturity</div><div class="k-val">${entAll.toFixed(1)}<small> / 5</small></div><div class="k-sub">target ${tarAll.toFixed(1)}, gap +${(tarAll-entAll).toFixed(1)}</div></div>
-    <div class="kpi"><div class="k-lab">Strongest unit</div><div class="k-val" style="font-size:1.4rem">${lead[0].u}</div><div class="k-sub">${lead[0].v.toFixed(1)} / 5 overall</div></div>
-    <div class="kpi"><div class="k-lab">Most behind</div><div class="k-val" style="font-size:1.4rem">${lead[lead.length-1].u}</div><div class="k-sub">${lead[lead.length-1].v.toFixed(1)} / 5 overall</div></div>
-    <div class="kpi"><div class="k-lab">Top priority</div><div class="k-val" style="font-size:1.15rem;line-height:1.2">${p0.name}</div><div class="k-sub">matters most, biggest gap</div></div>`;
-  /* heatmap */
+    <div class="kpi"><div class="k-lab">Strongest unit</div><div class="k-val" style="font-size:1.35rem">${lead[0].u}</div><div class="k-sub">${lead[0].v.toFixed(1)} / 5 overall</div></div>
+    <div class="kpi"><div class="k-lab">Most behind</div><div class="k-val" style="font-size:1.35rem">${lead[lead.length-1].u}</div><div class="k-sub">${lead[lead.length-1].v.toFixed(1)} / 5 overall</div></div>
+    <div class="kpi"><div class="k-lab">Top priority</div><div class="k-val" style="font-size:1.1rem;line-height:1.2">${p0.name}</div><div class="k-sub">matters most, biggest gap</div></div>`;
   const cols=`220px repeat(${G.units.length+1}, 1fr)`;
-  const hm=document.getElementById("hm");
-  let head=`<div class="hm-row" style="grid-template-columns:${cols}"><div class="hm-head first">Theme</div>${G.units.map(u=>`<div class="hm-head">${u}</div>`).join("")}<div class="hm-head ent">Enterprise</div></div>`;
+  let head=`<div class="hm-row" style="grid-template-columns:${cols}"><div class="hm-head first">Theme</div>${G.units.map((u,ui)=>`<div class="hm-head click" onclick="setUnit(${ui})">${esc(u)}</div>`).join("")}<div class="hm-head ent">Enterprise</div></div>`;
   let rows=THEMES.map((th,ti)=>{
     const cells=G.units.map((u,ui)=>{ const v=G.CUR[ti][ui]; if(!G.NU[ui]||!v) return `<div class="cell na">–</div>`; const st=cellStyle(v); return `<div class="cell" style="background:${st[0]};color:${st[1]}" onmouseenter="cellPop(event,${ti},${ui})" onmouseleave="hidePop()">${v.toFixed(1)}</div>`; }).join("");
     const ev=entCur(ti), est=cellStyle(ev);
-    const ent=`<div class="cell ent" style="background:${est[0]};color:${est[1]}" onmouseenter="cellPop(event,${ti},-1)" onmouseleave="hidePop()">${ev.toFixed(1)}</div>`;
-    return `<div class="hm-row" style="grid-template-columns:${cols}"><div class="hm-theme"><span class="wv wv${WAVES[ti]}">${WLAB[WAVES[ti]].replace("Wave ","W")}</span>${th}</div>${cells}${ent}</div>`;
+    return `<div class="hm-row" style="grid-template-columns:${cols}"><div class="hm-theme"><span class="wv wv${WAVES[ti]}">${WLAB[WAVES[ti]].replace("Wave ","W")}</span>${th}</div>${cells}<div class="cell ent" style="background:${est[0]};color:${est[1]}" onmouseenter="cellPop(event,${ti},-1)" onmouseleave="hidePop()">${ev.toFixed(1)}</div></div>`;
   }).join("");
-  hm.innerHTML=head+rows;
-  /* leaders */
-  document.getElementById("leaders").innerHTML=lead.map(x=>`<li><span class="nm">${x.u}</span><span class="ba"><i style="width:${x.v/5*100}%"></i></span><span class="vv">${x.v.toFixed(1)}</span></li>`).join("");
-  /* alignment */
-  const al=THEMES.map((th,ti)=>{ const sds=G.SD[ti].filter(x=>x!==null&&x!==undefined); return {th, sd: sds.length?mean(sds):0}; }).sort((a,b)=>b.sd-a.sd).slice(0,3);
-  document.getElementById("align").innerHTML = al.every(x=>x.sd===0) ? `<div class="align-item"><div class="ai-s">Need at least two responses per unit to measure agreement.</div></div>` :
-    al.map(x=>`<div class="align-item"><div class="ai-t">${x.th}</div><div class="ai-s">Units see this differently. <b>Alignment gap</b>, agree a shared view first.</div></div>`).join("");
-  /* priorities */
-  const top=priorities().filter(p=> p.score>0.2 || p.wave===1).slice(0,6);
+  document.getElementById("hm").innerHTML=head+rows;
+  document.getElementById("leaders").innerHTML=lead.map(x=>`<li onclick="setUnit(${x.ui})"><span class="nm">${esc(x.u)}</span><span class="ba"><i style="width:${x.v/5*100}%"></i></span><span class="vv">${x.v.toFixed(1)}</span><span class="go">&rsaquo;</span></li>`).join("");
+  const al=THEMES.map((th,ti)=>{ const sds=G.SD[ti].filter(x=>x!==null&&x!==undefined); return {th,sd:sds.length?mean(sds):0}; }).sort((a,b)=>b.sd-a.sd).slice(0,3);
+  document.getElementById("align").innerHTML = al.every(x=>x.sd===0) ? `<div class="align-item"><div class="ai-s">Need at least two responses per unit to measure agreement.</div></div>` : al.map(x=>`<div class="align-item"><div class="ai-t">${x.th}</div><div class="ai-s">Units see this differently. <b>Alignment gap</b>, agree a shared view first.</div></div>`).join("");
+  const top=entPriorities().filter(p=>p.score>0.2||p.wave===1).slice(0,6);
   document.getElementById("prio").innerHTML=top.map((p,n)=>`<li><div class="pr-top"><span class="pr-num">${n+1}</span><span class="pr-name">${p.name}</span><span class="pr-tags"><span class="pr-tag">${WLAB[p.wave]}</span><span class="pr-tag">matters: ${impLab(p.imp)}</span><span class="pr-tag">gap +${p.gap.toFixed(1)}</span></span></div><div class="pr-rec">${RECS[p.idx]}</div></li>`).join("");
 }
 
+/* ---- domain (unit) report ---- */
+function renderUnit(ui){
+  const cur=THEMES.map((_,ti)=>G.CUR[ti][ui]||0), tar=THEMES.map((_,ti)=>G.TAR[ti][ui]||0);
+  const overall=mean(cur), overallT=mean(tar), lvl=levelOf(overall);
+  const ent=THEMES.map((_,ti)=>entCur(ti)), entOverall=mean(ent);
+  const dataC=mean(DATA_THEMES.map(i=>cur[i])), dataT=mean(DATA_THEMES.map(i=>tar[i]));
+  const aiC=mean(AI_THEMES.map(i=>cur[i])), aiT=mean(AI_THEMES.map(i=>tar[i]));
+  const fnow=k=>mean(FORCE_THEMES[k].map(i=>cur[i])), ftar=k=>mean(FORCE_THEMES[k].map(i=>tar[i]));
+  const forces=[{n:"Artificial intelligence",s:"artificial intelligence"},{n:"Human intelligence",s:"human intelligence"},{n:"Data",s:"data"}].map(f=>({...f,now:fnow(f.s),tar:ftar(f.s)}));
+  const lowest=Math.min(...forces.map(f=>f.now)); const c0=forces.slice().sort((a,b)=>a.now-b.now)[0];
+  const ftk=FORCE_THEMES[c0.s]; let wti=ftk[0]; ftk.forEach(k=>{if(cur[k]<cur[wti])wti=k;});
+  const deltas=THEMES.map((_,ti)=>({ti,d:cur[ti]-ent[ti]}));
+  const up=deltas.slice().sort((a,b)=>b.d-a.d)[0], dn=deltas.slice().sort((a,b)=>a.d-b.d)[0];
+  const rows=THEMES.map((t,i)=>({idx:i,name:t,wave:WAVES[i],now:cur[i],tar:tar[i],gap:tar[i]-cur[i]})).sort((a,b)=>a.wave-b.wave||a.now-b.now||b.gap-a.gap);
+  const pick=rows.filter(r=>(r.wave===1&&r.now<3)||r.gap>=0.5).slice(0,5); const list=pick.length?pick:rows.slice(0,3);
+  const forcesH=forces.map(f=>{const weak=f.now<=lowest+0.001; return `<div class="force ${weak?'weak':''}">${weak?'<span class="f-tag">constraint</span>':''}<div class="f-name">${f.n}</div><div class="f-score">${f.now.toFixed(1)}<small> / 5</small></div><div class="f-bar"><div class="f-now" style="width:${f.now/5*100}%"></div><div class="f-tar" style="left:calc(${f.tar/5*100}% - 1px)"></div></div></div>`;}).join("");
+  const verdictH=`Within this unit, the binding constraint is <b>${c0.s}</b>, at ${c0.now.toFixed(1)} out of 5. The weakest of the three caps the value it can create. ${NEXT_STEP[c0.s]}<div class="verdict-next"><span class="vn-lab">Do this next</span> <b>${THEMES[wti]}.</b> ${RECS[wti]}</div>`;
+  const nextH=list.map((r,n)=>`<li><div class="ns-top"><span class="ns-num">${n+1}</span><span class="ns-name">${r.name}</span><span class="wavetag w${r.wave}">${WLAB[r.wave]}</span></div><div class="ns-rec">${RECS[r.idx]}</div></li>`).join("");
+  const roadH=[1,2,3].map(w=>{ const items=THEMES.map((t,i)=>({idx:i,name:t,now:cur[i],wave:WAVES[i]})).filter(x=>x.wave===w).sort((a,b)=>a.now-b.now);
+    const chips=items.map(x=>{const st=x.now<2.5?"low":x.now<3.5?"mid":"ok"; return `<button class="road-chip ${st}" onmouseenter="recHover(event,${x.idx})" onmouseleave="recOut()" onclick="showRec(event,${x.idx})"><span>${x.name}</span><span class="rc-score">${x.now.toFixed(1)}</span></button>`;}).join("");
+    return `<div class="road-stage"><div class="road-head"><span class="road-badge">${w}</span><div><div class="road-wave">${WLAB[w]}</div><div class="road-name">${WNAME[w]}</div></div></div><div class="road-chips">${chips}</div></div>`; }).join("");
+  const cmp = (up.d>0.15||dn.d<-0.15) ? `This unit ${up.d>0.15?`leads the enterprise on <b>${THEMES[up.ti]}</b> (+${up.d.toFixed(1)})`:"sits close to the enterprise"}${(up.d>0.15&&dn.d<-0.15)?", and ":""}${dn.d<-0.15?`trails on <b>${THEMES[dn.ti]}</b> (${dn.d.toFixed(1)})`:""}.` : "This unit tracks the enterprise average closely.";
+
+  document.getElementById("unit-view").innerHTML = `
+    <button class="back" onclick="setEnt()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg> Back to enterprise</button>
+    <h2 class="u-title">${esc(G.units[ui])}</h2>
+    <p class="u-sub">Department report &middot; ${G.NU[ui]} response${G.NU[ui]===1?"":"s"}</p>
+    <div class="tiles">
+      <div class="tile2 hero"><div class="t-lab">Maturity</div><div class="t-now">${overall.toFixed(1)}<small> / 5</small></div><div class="t-arrow">target ${overallT.toFixed(1)} · enterprise ${entOverall.toFixed(1)}</div><div class="level-pill">Level ${lvl}, ${LEVELS[lvl-1]}</div></div>
+      <div class="tile2"><div class="t-lab">Data readiness</div><div class="t-now">${dataC.toFixed(1)}<small> / 5</small></div><div class="t-arrow">target <b>${dataT.toFixed(1)}</b></div></div>
+      <div class="tile2"><div class="t-lab">AI readiness</div><div class="t-now">${aiC.toFixed(1)}<small> / 5</small></div><div class="t-arrow">target <b>${aiT.toFixed(1)}</b></div></div>
+      <div class="tile2"><div class="t-lab">vs enterprise</div><div class="t-now" style="font-size:1.5rem">${overall>=entOverall?"Ahead":"Behind"}</div><div class="t-arrow">${(overall-entOverall>=0?"+":"")+(overall-entOverall).toFixed(1)} vs average</div></div>
+    </div>
+    <div class="panel" style="margin-top:8px;"><p class="compare">${cmp}</p></div>
+    <div class="section-label">Maturity across the ten themes</div>
+    <div class="panel two-col"><div><h3 style="margin:0 0 4px;">Today versus target</h3><p class="section-sub">Filled is today; outline is the target this unit set.</p><div class="legend3"><span class="now"><i></i>Today</span><span class="tar"><i></i>Target</span></div></div><div id="u-radar"></div></div>
+    <div class="section-label">The value equation for this unit</div>
+    <div class="panel"><div class="forces">${forcesH}</div><div class="verdict">${verdictH}</div></div>
+    <div class="section-label">Where this unit should focus</div>
+    <div class="panel"><ol class="nextsteps">${nextH}</ol></div>
+    <div class="section-label">This unit's roadmap</div>
+    <div class="panel"><p class="section-sub" style="margin-top:0;">Hover a theme for what to put in place.</p><div class="roadmap">${roadH}</div></div>`;
+  drawRadar(cur, tar, "u-radar");
+}
+
+/* ---- radar ---- */
+function drawRadar(now, target, hostId){
+  const n=now.length, size=420, cx=size/2, cy=size/2, R=140, ns="http://www.w3.org/2000/svg";
+  const s=document.createElementNS(ns,"svg"); s.setAttribute("viewBox",`0 0 ${size} ${size}`); s.setAttribute("width","100%"); s.style.maxWidth=size+"px"; s.style.display="block"; s.style.margin="0 auto";
+  const ang=i=>(-90+i*360/n)*Math.PI/180, pt=(i,v)=>[cx+(v/5*R)*Math.cos(ang(i)), cy+(v/5*R)*Math.sin(ang(i))];
+  for(let r=1;r<=5;r++){ const p=document.createElementNS(ns,"polygon"); p.setAttribute("points",THEMES.map((_,i)=>pt(i,r).join(",")).join(" ")); p.setAttribute("fill","none"); p.setAttribute("stroke","#ECE7F1"); p.setAttribute("stroke-width",r===5?"1.4":"1"); s.appendChild(p); }
+  THEMES.forEach((t,i)=>{ const [x,y]=pt(i,5); const ln=document.createElementNS(ns,"line"); ln.setAttribute("x1",cx);ln.setAttribute("y1",cy);ln.setAttribute("x2",x);ln.setAttribute("y2",y);ln.setAttribute("stroke","#F0ECF5");ln.setAttribute("stroke-width","1"); s.appendChild(ln);
+    const [lx,ly]=pt(i,5.6); const tx=document.createElementNS(ns,"text"); const ca=Math.cos(ang(i)); tx.setAttribute("x",lx);tx.setAttribute("y",ly);tx.setAttribute("text-anchor",ca>0.3?"start":ca<-0.3?"end":"middle");tx.setAttribute("dominant-baseline","middle");tx.setAttribute("font-size","10.5");tx.setAttribute("fill","#6E6684");tx.setAttribute("font-family","Inter, sans-serif");
+    const words=t.split(" "); let lines=[],cu=""; words.forEach(w=>{ if((cu+" "+w).trim().length>13){lines.push(cu.trim());cu=w;}else cu+=" "+w; }); if(cu.trim())lines.push(cu.trim());
+    lines.forEach((l,j)=>{ const ts=document.createElementNS(ns,"tspan"); ts.setAttribute("x",lx); ts.setAttribute("dy",j===0?-(lines.length-1)*5.5:11); ts.textContent=l; tx.appendChild(ts); }); s.appendChild(tx); });
+  const poly=(vals,fill,stroke,dash)=>{ const p=document.createElementNS(ns,"polygon"); p.setAttribute("points",vals.map((v,i)=>pt(i,v).join(",")).join(" ")); p.setAttribute("fill",fill); p.setAttribute("stroke",stroke); p.setAttribute("stroke-width","2"); p.setAttribute("stroke-linejoin","round"); if(dash)p.setAttribute("stroke-dasharray","5 4"); s.appendChild(p); };
+  poly(target,"none","#FA5F09",true); poly(now,"rgba(151,71,239,.15)","#9747EF",false);
+  now.forEach((v,i)=>{const[x,y]=pt(i,v);const c=document.createElementNS(ns,"circle");c.setAttribute("cx",x);c.setAttribute("cy",y);c.setAttribute("r","3");c.setAttribute("fill","#9747EF");s.appendChild(c);});
+  const h=document.getElementById(hostId); h.innerHTML=""; h.appendChild(s);
+}
+
+/* ---- popovers ---- */
 function cellPop(e,ti,ui){
   const pop=document.getElementById("pop"); let cur,tar,imp,sd,n,who;
-  if(ui===-1){ cur=entCur(ti); tar=entTar(ti); imp=entImp(ti); const sds=G.SD[ti].filter(x=>x!==null); sd=sds.length?mean(sds):null; n=G.NU.reduce((a,b)=>a+b); who="Enterprise"; }
-  else { cur=G.CUR[ti][ui]; tar=G.TAR[ti][ui]; imp=G.IMP01[ti][ui]; sd=G.SD[ti][ui]; n=G.NU[ui]; who=G.units[ui]; }
-  pop.innerHTML=`<div class="ph">${who} &middot; ${THEMES[ti]}</div><div class="pr"><span>Today</span><span>${cur.toFixed(1)} / 5</span></div><div class="pr"><span>Target</span><span>${tar.toFixed(1)} / 5</span></div><div class="pr"><span>Importance</span><span>${impLab(imp)}</span></div><div class="pr"><span>Agreement</span><span>${consLab(sd)}</span></div><div class="pr"><span>Responses</span><span>${n}</span></div>`;
+  if(ui===-1){ cur=entCur(ti);tar=entTar(ti);imp=entImp(ti); const sds=G.SD[ti].filter(x=>x!==null); sd=sds.length?mean(sds):null; n=G.NU.reduce((a,b)=>a+b); who="Enterprise"; }
+  else { cur=G.CUR[ti][ui];tar=G.TAR[ti][ui];imp=G.IMP01[ti][ui];sd=G.SD[ti][ui];n=G.NU[ui];who=G.units[ui]; }
+  pop.innerHTML=`<div class="ph">${esc(who)} &middot; ${THEMES[ti]}</div><div class="pr"><span>Today</span><span>${cur.toFixed(1)} / 5</span></div><div class="pr"><span>Target</span><span>${tar.toFixed(1)} / 5</span></div><div class="pr"><span>Importance</span><span>${impLab(imp)}</span></div><div class="pr"><span>Agreement</span><span>${consLab(sd)}</span></div><div class="pr"><span>Responses</span><span>${n}</span></div>`;
   pop.style.display="block"; const r=e.currentTarget.getBoundingClientRect(), w=pop.offsetWidth; let left=r.left+window.scrollX+r.width/2-w/2; left=Math.max(window.scrollX+8,Math.min(left,window.scrollX+document.documentElement.clientWidth-w-8)); pop.style.left=left+"px"; pop.style.top=(r.bottom+window.scrollY+8)+"px";
 }
 function hidePop(){ document.getElementById("pop").style.display="none"; }
+let recTimer=null;
+function recShow(el,i){ const p=document.getElementById("pop"); p.innerHTML=`<div class="ph">${esc(THEMES[i])} <span class="wavetag w${WAVES[i]}">${WLAB[WAVES[i]]}</span></div>${esc(RECS[i])}`; p.style.display="block"; const r=el.getBoundingClientRect(),w=p.offsetWidth; let left=r.left+window.scrollX; left=Math.min(left,window.scrollX+document.documentElement.clientWidth-w-14); left=Math.max(window.scrollX+10,left); p.style.left=left+"px"; p.style.top=(r.bottom+window.scrollY+8)+"px"; }
+function showRec(e,i){ e.stopPropagation(); if(recTimer){clearTimeout(recTimer);recTimer=null;} recShow(e.currentTarget,i); }
+function recHover(e,i){ if(recTimer){clearTimeout(recTimer);recTimer=null;} recShow(e.currentTarget,i); }
+function recOut(){ recTimer=setTimeout(()=>document.getElementById("pop").style.display="none",160); }
 
-function onFiles(files){
-  const arr=[...files]; if(!arr.length) return; let loaded=[], pending=arr.length;
-  arr.forEach(f=>{ const rd=new FileReader(); rd.onload=()=>{ try{ const j=JSON.parse(rd.result); if(j && j.answers) loaded.push(j); }catch(e){} if(--pending===0){ if(loaded.length){ G=buildFromResponses(loaded); renderAll(); } else { alert("No valid response files found. Use the files downloaded from the assessment."); } } }; rd.readAsText(f); });
-}
-function loadSample(){ G=buildSample(); renderAll(); }
+/* ---- io ---- */
+function onFiles(files){ const arr=[...files]; if(!arr.length)return; let loaded=[],pending=arr.length;
+  arr.forEach(f=>{ const rd=new FileReader(); rd.onload=()=>{ try{ const j=JSON.parse(rd.result); if(j&&j.answers) loaded.push(j); }catch(e){} if(--pending===0){ if(loaded.length){ G=buildFromResponses(loaded); VIEW={type:"ent"}; render(); } else alert("No valid response files found. Use the files downloaded from the assessment."); } }; rd.readAsText(f); }); }
+function loadSample(){ G=buildSample(); VIEW={type:"ent"}; render(); }
 loadSample();
 </script>
 </body>

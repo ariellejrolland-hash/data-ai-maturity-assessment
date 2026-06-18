@@ -211,7 +211,8 @@
     <div class="field"><label>Organisation name <span class="req">*</span></label><input type="text" id="org" placeholder="Enter your organisation name" autocomplete="off" /><div class="err" id="org-err">Please enter your organisation name.</div></div>
     <div class="field row2">
       <div><label>Department <span class="req">*</span></label>
-        <select id="dept"><option value="">Choose one</option><option>Commercial or Sales</option><option>Marketing</option><option>Supply Chain or Operations</option><option>Manufacturing</option><option>Quality</option><option>Regulatory Affairs</option><option>R&amp;D or Clinical</option><option>Finance</option><option>HR or People</option><option>IT or Digital</option><option>Other</option></select></div>
+        <input type="text" id="dept" list="depts" placeholder="e.g. Supply Chain" autocomplete="off" />
+        <datalist id="depts"><option>Commercial or Sales</option><option>Marketing</option><option>Supply Chain or Operations</option><option>Manufacturing</option><option>Quality</option><option>Regulatory Affairs</option><option>R&amp;D or Clinical</option><option>Finance</option><option>HR or People</option><option>IT or Digital</option></datalist></div>
       <div><label>Your role <span class="req">*</span></label><input type="text" id="role" placeholder="e.g. Head of Quality" autocomplete="off" /></div>
     </div>
     <div class="err" id="dr-err" style="margin-bottom:10px;">Please choose a department and enter your role.</div>
