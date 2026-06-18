@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Example — light, navigator, with target + notes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --purple:#9747EF; --purple-deep:#7a33c9; --orange:#FA5F09;
+    --grad:linear-gradient(120deg,#9747EF,#FA5F09);
+    --bg:#FAF8F4; --surface:#ffffff; --surface-2:#FBF9FE;
+    --ink:#1B1426; --muted:#6E6684; --faint:#A39FB2;
+    --line:#ECE7F1; --line-2:#E2DCEC;
+    --chip:#F4EEFC; --chip-ink:#7a33c9;
+    --good:#16a34a;
+    --display:'DM Serif Display', Georgia, serif;
+    --body:'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body { font-family: var(--body); background: var(--bg); color: var(--ink); line-height: 1.55; -webkit-font-smoothing: antialiased; }
+  .mockbar { background: var(--ink); color: #fff; font-size: .76rem; text-align: center; padding: 7px 12px; }
+  .mockbar b { color: #FAC9A6; }
+
+  header { background: var(--surface); border-bottom: 1px solid var(--line); position: sticky; top: 0; z-index: 20; }
+  .head-in { max-width: 1120px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; padding: 14px 24px; gap: 16px; }
+  .brand { display: flex; align-items: center; gap: 11px; }
+  .brand .mark { width: 38px; height: 38px; border-radius: 11px; border: 1px solid var(--line-2); display: flex; align-items: center; justify-content: center; }
+  .brand .mark svg { width: 26px; height: 26px; }
+  .brand .wm { font-size: .66rem; font-weight: 600; letter-spacing: .26em; text-transform: uppercase; color: var(--purple-deep); }
+  .brand .ti { font-family: var(--display); font-size: 1.05rem; line-height: 1; margin-top: 2px; }
+  .head-right { display: flex; align-items: center; gap: 18px; }
+  .prog-wrap { display: flex; align-items: center; gap: 10px; }
+  .prog-txt { font-size: .8rem; color: var(--muted); font-weight: 500; white-space: nowrap; }
+  .prog-txt b { color: var(--ink); }
+  .prog-bar { width: 120px; height: 6px; background: var(--line); border-radius: 999px; overflow: hidden; }
+  .prog-bar > i { display: block; height: 100%; width: 0; background: var(--grad); border-radius: 999px; transition: width .35s ease; }
+  .home-btn { width: 38px; height: 38px; border-radius: 10px; border: 1px solid var(--line-2); background: #fff; color: var(--ink); display: flex; align-items: center; justify-content: center; cursor: pointer; }
+  .home-btn:hover { border-color: var(--purple); color: var(--purple); }
+  .home-btn svg { width: 18px; height: 18px; }
+
+  .nav { background: var(--surface); border-bottom: 1px solid var(--line); position: sticky; top: 67px; z-index: 19; }
+  .nav-in { max-width: 1120px; margin: 0 auto; display: flex; gap: 4px; padding: 0 16px; overflow-x: auto; scrollbar-width: thin; }
+  .nav-tab { flex: 0 0 auto; border: none; background: none; font-family: inherit; font-size: .82rem; font-weight: 500; color: var(--muted); padding: 13px 12px 11px; cursor: pointer; border-bottom: 2px solid transparent; white-space: nowrap; display: flex; align-items: center; gap: 7px; transition: color .15s; }
+  .nav-tab .ni { width: 16px; height: 16px; color: var(--faint); }
+  .nav-tab:hover { color: var(--ink); }
+  .nav-tab.active { color: var(--ink); font-weight: 600; border-image: var(--grad) 1; border-bottom: 2px solid; }
+  .nav-tab.active .ni { color: var(--purple); }
+  .nav-tab.done .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--good); }
+  .nav-tab.locked { color: var(--faint); cursor: default; }
+  .nav-tab.locked:hover { color: var(--faint); }
+
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 30px 24px 70px; display: grid; grid-template-columns: 1fr 290px; gap: 30px; align-items: start; }
+  .domain-kicker { font-size: .72rem; text-transform: uppercase; letter-spacing: .12em; color: var(--purple-deep); font-weight: 600; }
+  .domain-title { font-family: var(--display); font-size: 1.9rem; line-height: 1.12; margin: 4px 0 2px; }
+  .domain-sub { color: var(--muted); font-size: .92rem; }
+  .section-tag { display: inline-block; font-size: .72rem; font-weight: 600; letter-spacing: .04em; color: var(--chip-ink); background: var(--chip); padding: 6px 12px; border-radius: 999px; margin: 26px 0 4px; }
+
+  .qcard { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 22px 24px; margin-top: 14px; box-shadow: 0 6px 22px -16px rgba(27,20,38,.4); }
+  .qnum { font-size: .72rem; font-weight: 700; color: var(--purple); letter-spacing: .06em; }
+  .qstmt { font-size: 1.06rem; font-weight: 600; margin: 4px 0 16px; line-height: 1.4; }
+  .opts { display: flex; flex-direction: column; gap: 8px; }
+  .opt { display: flex; align-items: flex-start; gap: 12px; padding: 11px 13px; border: 1px solid var(--line); border-radius: 11px; cursor: pointer; background: #fff; text-align: left; font-family: inherit; transition: border-color .12s, background .12s; }
+  .opt:hover { border-color: var(--line-2); background: var(--surface-2); }
+  .opt.sel { border-color: var(--purple); background: var(--chip); }
+  .opt .lv { flex: 0 0 auto; width: 24px; height: 24px; border-radius: 7px; background: #F1ECF8; color: var(--purple-deep); font-weight: 700; font-size: .8rem; display: flex; align-items: center; justify-content: center; }
+  .opt.sel .lv { background: var(--grad); color: #fff; }
+  .opt .od { font-size: .9rem; color: var(--muted); padding-top: 2px; }
+  .opt.sel .od { color: var(--ink); }
+  .trow { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; margin-top: 14px; padding: 11px 13px; background: var(--surface-2); border: 1px solid var(--line); border-radius: 11px; }
+  .tlab { flex-basis: 100%; font-size: .82rem; font-weight: 600; color: var(--ink); margin-bottom: 2px; }
+  .tlab span { color: var(--faint); font-weight: 500; }
+  .tbtns { display: flex; gap: 6px; }
+  .tbtn { width: 32px; height: 32px; border-radius: 8px; border: 1px solid var(--line-2); background: #fff; font-weight: 700; font-size: .82rem; color: var(--muted); cursor: pointer; font-family: inherit; transition: border-color .12s, background .12s, color .12s; }
+  .tbtn:hover:not(:disabled) { border-color: var(--orange); color: var(--ink); }
+  .tbtn.sel { background: var(--orange); border-color: var(--orange); color: #fff; }
+  .tbtn:disabled { opacity: .35; cursor: not-allowed; }
+  .np { margin-left: 6px; border: 1px solid var(--line-2); background: #fff; color: var(--muted); font-family: inherit; font-size: .78rem; font-weight: 600; padding: 0 12px; height: 32px; border-radius: 8px; cursor: pointer; transition: border-color .12s, color .12s, background .12s; }
+  .np:hover { border-color: var(--ink); color: var(--ink); }
+  .np.sel { background: var(--ink); border-color: var(--ink); color: #fff; }
+
+  .rail { position: sticky; top: 124px; display: flex; flex-direction: column; gap: 16px; }
+  .scard { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 18px; box-shadow: 0 6px 22px -16px rgba(27,20,38,.4); }
+  .scard.theme { text-align: center; }
+  .tile { width: 56px; height: 56px; border-radius: 15px; background: var(--chip); display: inline-flex; align-items: center; justify-content: center; color: var(--purple); margin-bottom: 10px; }
+  .tile svg { width: 28px; height: 28px; }
+  .scard.theme .tn { font-weight: 600; font-size: 1rem; }
+  .scard.theme .ts { font-size: .8rem; color: var(--muted); margin-top: 2px; }
+  .ring-wrap { display: flex; align-items: center; gap: 14px; }
+  .ring { position: relative; width: 64px; height: 64px; flex: 0 0 auto; }
+  .ring svg { transform: rotate(-90deg); }
+  .ring .rt { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: .9rem; }
+  .ring-lab .rl-t { font-weight: 600; font-size: .9rem; }
+  .ring-lab .rl-s { font-size: .8rem; color: var(--muted); }
+  .meter-lab { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 9px; }
+  .meter-lab .ml-t { font-weight: 600; font-size: .9rem; }
+  .meter-lab .ml-v { font-family: var(--display); font-size: 1.3rem; }
+  .meter-lab .ml-v small { font-size: .8rem; color: var(--muted); font-family: var(--body); }
+  .meter { display: flex; gap: 5px; }
+  .meter i { flex: 1; height: 8px; border-radius: 3px; background: var(--line); }
+  .meter i.on { background: var(--purple); }
+  .m-foot { font-size: .82rem; color: var(--muted); margin-top: 9px; display: flex; align-items: center; gap: 7px; }
+  .m-foot .tdot { width: 9px; height: 9px; border-radius: 50%; background: var(--orange); flex: 0 0 auto; }
+  .m-foot b { color: var(--ink); }
+  .note-h { font-weight: 600; font-size: .9rem; margin-bottom: 9px; }
+  .note-h span { color: var(--faint); font-weight: 500; }
+  .note { width: 100%; min-height: 96px; resize: vertical; padding: 11px 13px; font-family: inherit; font-size: .88rem; color: var(--ink); background: var(--surface-2); border: 1px solid var(--line-2); border-radius: 11px; line-height: 1.5; }
+  .note::placeholder { color: var(--faint); }
+  .note:focus { outline: none; border-color: var(--purple); background: #fff; box-shadow: 0 0 0 3px rgba(151,71,239,.14); }
+
+  .foot { max-width: 1120px; margin: 0 auto; padding: 0 24px 50px; color: var(--faint); font-size: .8rem; text-align: center; }
+
+  @media (max-width: 880px) {
+    .wrap { grid-template-columns: 1fr; }
+    .rail { position: static; flex-direction: row; flex-wrap: wrap; }
+    .scard { flex: 1 1 220px; }
+  }
+</style>
+</head>
+<body>
+<div class="mockbar">Preview &middot; light + navigator design &middot; <b>three themes are interactive in this preview</b></div>
+
+<header>
+  <div class="head-in">
+    <div class="brand">
+      <div class="mark">
+        <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#9747EF"/><stop offset="1" stop-color="#FA5F09"/></linearGradient></defs>
+          <polygon points="50,10 86,30 86,70 50,90 14,70 14,30" fill="none" stroke="url(#g)" stroke-width="4" stroke-linejoin="round"/>
+          <text x="50" y="60" text-anchor="middle" font-family="Georgia, serif" font-size="30" font-weight="bold" fill="url(#g)">AR</text>
+        </svg>
+      </div>
+      <div>
+        <div class="wm">Arielle Rolland Advisory</div>
+        <div class="ti">Data &amp; AI Maturity</div>
+      </div>
+    </div>
+    <div class="head-right">
+      <div class="prog-wrap">
+        <span class="prog-txt"><b id="p-done">0</b> of <span id="p-total">9</span> answered</span>
+        <div class="prog-bar"><i id="p-bar"></i></div>
+      </div>
+      <button class="home-btn" title="Back to home" aria-label="Back to home">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M9 20v-6h6v6"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<nav class="nav"><div class="nav-in" id="nav"></div></nav>
+
+<div class="wrap">
+  <main>
+    <div class="domain-head">
+      <div class="domain-kicker" id="d-kicker">Theme 1</div>
+      <h1 class="domain-title" id="d-title">Theme</h1>
+      <p class="domain-sub" id="d-sub"></p>
+    </div>
+    <span class="section-tag" id="d-section">Section</span>
+    <div id="questions"></div>
+  </main>
+
+  <aside class="rail">
+    <div class="scard theme">
+      <span class="tile" id="s-icon"></span>
+      <div class="tn" id="s-name">Theme</div>
+      <div class="ts" id="s-sub">section</div>
+    </div>
+    <div class="scard">
+      <div class="ring-wrap">
+        <div class="ring">
+          <svg width="64" height="64"><circle cx="32" cy="32" r="27" fill="none" stroke="#EFEAF6" stroke-width="7"/><circle id="ring-fg" cx="32" cy="32" r="27" fill="none" stroke="url(#rg)" stroke-width="7" stroke-linecap="round"/><defs><linearGradient id="rg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#9747EF"/><stop offset="1" stop-color="#FA5F09"/></linearGradient></defs></svg>
+          <div class="rt" id="ring-pct">0%</div>
+        </div>
+        <div class="ring-lab"><div class="rl-t">This theme</div><div class="rl-s" id="ring-sub">0 of 3 answered</div></div>
+      </div>
+    </div>
+    <div class="scard">
+      <div class="meter-lab"><span class="ml-t">Where you are today</span><span class="ml-v"><span id="m-val">—</span><small> / 5</small></span></div>
+      <div class="meter" id="meter"><i></i><i></i><i></i><i></i><i></i></div>
+      <div class="m-foot"><span class="tdot"></span>Target so far <b id="m-tar">not set</b></div>
+    </div>
+    <div class="scard">
+      <div class="note-h">Notes for this theme <span>(optional)</span></div>
+      <textarea id="note" class="note" placeholder="Any context, examples or blockers you'd like to add..." oninput="setNote(this.value)"></textarea>
+    </div>
+  </aside>
+</div>
+
+<p class="foot">Illustrative example. Three themes are interactive; the rest of the navigator is shown for layout.</p>
+
+<script>
+const ICONS = {
+  compass:'<circle cx="12" cy="12" r="9"/><path d="M15 9l-2.2 4.2L8.5 15l2.2-4.2z"/>',
+  shield:'<path d="M12 3l7 3v5c0 4-3 7-7 8-4-1-7-4-7-8V6z"/><path d="M9 12l2 2 4-4"/>',
+  search:'<circle cx="11" cy="11" r="6"/><path d="M20 20l-4.3-4.3"/>',
+  net:'<circle cx="6" cy="7" r="2"/><circle cx="18" cy="7" r="2"/><circle cx="12" cy="17" r="2"/><path d="M7.7 8.3 11 15.1M16.3 8.3 13 15.1M8 7h8"/>',
+  lock:'<rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>',
+  bars:'<path d="M5 20V12M10 20V6M15 20V9M20 20v-6"/><path d="M4 20.5h17"/>',
+  target:'<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3.4"/>',
+  scale:'<path d="M12 4v15M7 19h10M5 8h14M5 8l-2.4 5h4.8zM19 8l-2.4 5h4.8z"/>',
+  users:'<circle cx="9" cy="8" r="3"/><path d="M3.6 19c0-3 2.4-5 5.4-5s5.4 2 5.4 5"/><path d="M16 6.6a3 3 0 0 1 0 4.8"/>',
+  robot:'<rect x="5" y="8" width="14" height="10" rx="2.5"/><path d="M9 13h.01M15 13h.01M12 5v3M3 12h2M19 12h2"/>'
+};
+function svg(k){ return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">'+ICONS[k]+'</svg>'; }
+
+const THEMES = [
+  { name:"Data ownership and direction", icon:"compass", section:"Ownership and accountability",
+    sub:"Who is responsible for our data, and the plan for using it.",
+    qs:[
+      { stmt:"It is clear who is responsible for our most important data.",
+        opts:["No one is clearly responsible.","A few informal owners, it depends who you ask.","Clear owners for the main types of data.","Owners are held accountable for their data.","Good ownership is simply how we work."] },
+      { stmt:"We have a simple, agreed plan for how we use our data.",
+        opts:["No plan at all.","Some ideas, but nothing written down.","A written plan for the key areas.","The plan is funded and progress is tracked.","The plan shapes our strategy each year."] },
+      { stmt:"When two reports disagree, we know which source to trust.",
+        opts:["We argue over whose number is right.","People have informal favourites.","We have named the official source.","Everyone uses it, nothing ships without it.","Reports and tools use it automatically."] }
+    ] },
+  { name:"Trustworthy data", icon:"shield", section:"Quality and consistency",
+    sub:"Whether people can rely on the numbers and records they work with.",
+    qs:[
+      { stmt:"People can trust that our numbers and records are correct.",
+        opts:["We find errors only after they cause a problem.","We check important data by hand.","We have agreed quality rules and check them.","We measure quality and track it over time.","Quality is checked automatically and fixed early."] },
+      { stmt:"We have one trusted version of key information, like customers and products.",
+        opts:["The same thing exists in many conflicting versions.","Cleaned up occasionally, by hand.","An agreed way to keep the records clean.","Kept accurate and watched closely.","Everyone uses the same trusted version."] },
+      { stmt:"Our data is complete enough to rely on.",
+        opts:["Lots of gaps and blanks.","Gaps in places, found by chance.","The key fields are mostly complete.","Completeness is measured and managed.","Complete and dependable everywhere."] }
+    ] },
+  { name:"Finding and understanding data", icon:"search", section:"Discovery and meaning",
+    sub:"Whether people can find data and understand what it means.",
+    qs:[
+      { stmt:"People can find the data they need without asking around.",
+        opts:["No way to see what data exists.","You ask the person who happens to know.","There is a catalogue people can browse.","The catalogue is kept current.","People and tools find what they need instantly."] },
+      { stmt:"It is easy to understand what a piece of data means.",
+        opts:["Meaning lives only in people's heads.","Some out of date glossaries exist.","Plain definitions for the data we use most.","Definitions and where data comes from are shown.","Anyone can trust the meaning straight away."] },
+      { stmt:"We build data once and reuse it, rather than rebuilding each time.",
+        opts:["Every project rebuilds from scratch.","Some reuse, but quality varies.","Key data is packaged with an owner.","Reusable, trusted data is shared widely.","Trusted data is shared across the business."] }
+    ] }
+];
+const NAV_EXTRA = [
+  {name:"Systems and connections", icon:"net"},
+  {name:"Security and compliance", icon:"lock"},
+  {name:"Insight and confidence", icon:"bars"},
+  {name:"AI strategy and value", icon:"target"},
+  {name:"Governing AI", icon:"scale"},
+  {name:"AI skills and adoption", icon:"users"},
+  {name:"Process and agents", icon:"robot"}
+];
+
+let active = 0;
+const answers = {};         // "t_q" -> { cur, tar }
+const notes = {};           // theme index -> string
+
+function totalQs(){ return THEMES.reduce((s,t)=>s+t.qs.length,0); }
+function answeredCount(){ return Object.values(answers).filter(a=>a && a.cur).length; }
+function themeAnswered(ti){ return THEMES[ti].qs.reduce((s,_,qi)=> s + ((answers[ti+"_"+qi]||{}).cur?1:0), 0); }
+function avgOf(ti, key){
+  const vals = THEMES[ti].qs.map((_,qi)=>(answers[ti+"_"+qi]||{})[key]).filter(Boolean);
+  return vals.length ? vals.reduce((a,b)=>a+b,0)/vals.length : null;
+}
+
+function renderNav(){
+  const nav = document.getElementById("nav"); nav.innerHTML = "";
+  THEMES.forEach((t,i)=>{
+    const done = themeAnswered(i) === t.qs.length;
+    const b = document.createElement("button");
+    b.className = "nav-tab" + (i===active?" active":"") + (done?" done":"");
+    b.innerHTML = `<span class="ni">${svg(t.icon)}</span>${t.name}${done?'<span class="dot"></span>':''}`;
+    b.onclick = ()=>{ active=i; render(); };
+    nav.appendChild(b);
+  });
+  NAV_EXTRA.forEach(t=>{
+    const b = document.createElement("button");
+    b.className = "nav-tab locked";
+    b.innerHTML = `<span class="ni">${svg(t.icon)}</span>${t.name}`;
+    nav.appendChild(b);
+  });
+}
+
+function renderDomain(){
+  const t = THEMES[active];
+  document.getElementById("d-kicker").textContent = `Theme ${active+1} of ${THEMES.length + NAV_EXTRA.length}`;
+  document.getElementById("d-title").textContent = t.name;
+  document.getElementById("d-sub").textContent = t.sub;
+  document.getElementById("d-section").textContent = t.section;
+  const box = document.getElementById("questions"); box.innerHTML = "";
+  t.qs.forEach((q,qi)=>{
+    const a = answers[active+"_"+qi] || {};
+    const opts = q.opts.map((o,oi)=>{
+      const lv = oi+1;
+      return `<button class="opt ${a.cur===lv?'sel':''}" onclick="pick(${qi},${lv})"><span class="lv">${lv}</span><span class="od">${o}</span></button>`;
+    }).join("");
+    const tbtns = [1,2,3,4,5].map(lv=>
+      `<button class="tbtn ${a.tar===lv?'sel':''}" ${(a.np || (a.cur && lv<a.cur)) ? 'disabled':''} onclick="pickTarget(${qi},${lv})">${lv}</button>`
+    ).join("");
+    box.insertAdjacentHTML("beforeend",
+      `<div class="qcard"><div class="qnum">Q${qi+1}</div><div class="qstmt">${q.stmt}</div><div class="opts">${opts}</div>
+       <div class="trow"><span class="tlab">Is this important to you, and do you have a target in mind for the future?</span><div class="tbtns">${tbtns}</div><button class="np ${a.np?'sel':''}" onclick="markNotPriority(${qi})">Not a priority</button></div></div>`);
+  });
+}
+
+function renderSide(){
+  const t = THEMES[active];
+  document.getElementById("s-icon").innerHTML = svg(t.icon);
+  document.getElementById("s-name").textContent = t.name;
+  document.getElementById("s-sub").textContent = t.section;
+  const ans = themeAnswered(active), tot = t.qs.length;
+  const C = 2*Math.PI*27;
+  const fg = document.getElementById("ring-fg");
+  fg.style.strokeDasharray = C; fg.style.strokeDashoffset = C*(1-ans/tot);
+  document.getElementById("ring-pct").textContent = Math.round(ans/tot*100)+"%";
+  document.getElementById("ring-sub").textContent = `${ans} of ${tot} answered`;
+  const cur = avgOf(active,"cur"), tar = avgOf(active,"tar");
+  document.getElementById("m-val").textContent = cur ? cur.toFixed(1) : "—";
+  const filled = cur ? Math.round(cur) : 0;
+  document.querySelectorAll("#meter i").forEach((el,i)=> el.classList.toggle("on", i<filled));
+  document.getElementById("m-tar").textContent = tar ? tar.toFixed(1)+" / 5" : "not set";
+  document.getElementById("note").value = notes[active] || "";
+}
+
+function renderProgress(){
+  document.getElementById("p-done").textContent = answeredCount();
+  document.getElementById("p-total").textContent = totalQs();
+  document.getElementById("p-bar").style.width = (answeredCount()/totalQs()*100)+"%";
+}
+
+function pick(qi, lv){
+  const k = active+"_"+qi; const a = answers[k] || {};
+  a.cur = lv; if (!a.tar || a.tar < lv) a.tar = lv;
+  answers[k] = a; render();
+}
+function pickTarget(qi, lv){
+  const k = active+"_"+qi; const a = answers[k] || {};
+  if (a.cur && lv < a.cur) return;
+  a.tar = lv; a.np = false; answers[k] = a; render();
+}
+function markNotPriority(qi){ const k = active+"_"+qi; const a = answers[k] || {}; a.np = !a.np; if (a.np) a.tar = null; answers[k] = a; render(); }
+function setNote(v){ notes[active] = v; }
+function render(){ renderNav(); renderDomain(); renderSide(); renderProgress(); }
+render();
+</script>
+</body>
+</html>

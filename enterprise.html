@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Example — enterprise report</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --purple:#9747EF; --purple-deep:#7a33c9; --orange:#FA5F09;
+    --grad:linear-gradient(120deg,#9747EF,#FA5F09);
+    --bg:#FAF8F4; --surface:#ffffff; --surface-2:#FBF9FE;
+    --ink:#1B1426; --muted:#6E6684; --faint:#A39FB2;
+    --line:#ECE7F1; --line-2:#E2DCEC;
+    --chip:#F4EEFC; --chip-ink:#7a33c9;
+    --display:'DM Serif Display', Georgia, serif;
+    --body:'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body { font-family: var(--body); background: var(--bg); color: var(--ink); line-height: 1.55; -webkit-font-smoothing: antialiased; }
+  .mockbar { background: var(--ink); color: #fff; font-size: .76rem; text-align: center; padding: 7px 12px; }
+  .mockbar b { color: #FAC9A6; }
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 26px 24px 80px; }
+
+  header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; margin-bottom: 4px; }
+  .brand { display: flex; align-items: center; gap: 12px; }
+  .brand .mark { width: 42px; height: 42px; border-radius: 12px; border: 1px solid var(--line-2); display: flex; align-items: center; justify-content: center; background: #fff; }
+  .brand .mark svg { width: 28px; height: 28px; }
+  .brand .wm { font-size: .64rem; font-weight: 600; letter-spacing: .26em; text-transform: uppercase; color: var(--purple-deep); }
+  .brand .ti { font-family: var(--display); font-size: 1.55rem; line-height: 1.05; }
+  .scope { font-size: .82rem; color: var(--muted); }
+  .scope b { color: var(--ink); }
+
+  .kpis { display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; margin: 22px 0 8px; }
+  .kpi { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 18px 20px; box-shadow: 0 6px 22px -16px rgba(27,20,38,.4); }
+  .kpi .k-lab { font-size: .72rem; font-weight: 600; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); }
+  .kpi .k-val { font-family: var(--display); font-size: 2rem; line-height: 1.1; margin-top: 5px; }
+  .kpi .k-val small { font-size: .9rem; color: var(--faint); font-family: var(--body); }
+  .kpi .k-sub { font-size: .82rem; color: var(--muted); margin-top: 3px; }
+  .kpi.hero { background: var(--grad); border: none; color: #fff; }
+  .kpi.hero .k-lab, .kpi.hero .k-sub { color: rgba(255,255,255,.85); }
+  .kpi.hero .k-val small { color: rgba(255,255,255,.75); }
+
+  .section-label { font-family: var(--display); font-size: 1.3rem; margin: 34px 0 6px; }
+  .section-sub { color: var(--muted); font-size: .88rem; margin: 0 0 14px; }
+  .panel { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 20px 22px; box-shadow: 0 6px 22px -16px rgba(27,20,38,.4); }
+
+  /* heatmap */
+  .hm { display: grid; gap: 6px; }
+  .hm-row { display: grid; grid-template-columns: 220px repeat(5, 1fr); gap: 6px; align-items: center; }
+  .hm-head { font-size: .74rem; font-weight: 700; color: var(--muted); text-align: center; padding: 4px 0; text-transform: uppercase; letter-spacing: .03em; }
+  .hm-head.first { text-align: left; }
+  .hm-head.ent { color: var(--purple-deep); }
+  .hm-theme { font-size: .85rem; font-weight: 500; display: flex; align-items: center; gap: 7px; }
+  .hm-theme .wv { font-size: .6rem; font-weight: 700; padding: 2px 6px; border-radius: 999px; }
+  .wv1 { background: rgba(250,95,9,.16); color: #b2400f; } .wv2 { background: rgba(151,71,239,.16); color: var(--purple-deep); } .wv3 { background: #EEEAF2; color: var(--muted); }
+  .cell { height: 42px; border-radius: 9px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: .92rem; cursor: default; border: 1px solid transparent; }
+  .cell.ent { border: 1px dashed var(--purple); }
+  .legend { display: flex; gap: 16px; align-items: center; font-size: .78rem; color: var(--muted); margin-top: 14px; flex-wrap: wrap; }
+  .legend .sw { display: inline-flex; align-items: center; gap: 6px; }
+  .legend .sw i { width: 16px; height: 12px; border-radius: 3px; }
+
+  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  .rank { list-style: none; margin: 0; padding: 0; }
+  .rank li { display: flex; align-items: center; gap: 12px; padding: 11px 0; border-bottom: 1px solid var(--line); }
+  .rank li:last-child { border: none; }
+  .rank .nm { font-weight: 600; flex: 1; }
+  .rank .ba { width: 110px; height: 8px; background: var(--line); border-radius: 999px; overflow: hidden; }
+  .rank .ba i { display: block; height: 100%; background: var(--grad); border-radius: 999px; }
+  .rank .vv { font-variant-numeric: tabular-nums; font-weight: 700; width: 34px; text-align: right; }
+  .align-item { padding: 11px 0; border-bottom: 1px solid var(--line); }
+  .align-item:last-child { border: none; }
+  .align-item .ai-t { font-weight: 600; font-size: .92rem; }
+  .align-item .ai-s { font-size: .82rem; color: var(--muted); }
+  .align-item .ai-s b { color: var(--orange); }
+
+  ol.prio { list-style: none; margin: 0; padding: 0; }
+  ol.prio li { padding: 14px 0; border-bottom: 1px solid var(--line); }
+  ol.prio li:last-child { border: none; }
+  .pr-top { display: flex; align-items: center; gap: 11px; flex-wrap: wrap; }
+  .pr-num { width: 26px; height: 26px; border-radius: 50%; background: var(--grad); color: #fff; font-weight: 700; font-size: .82rem; display: flex; align-items: center; justify-content: center; }
+  .pr-name { font-weight: 600; }
+  .pr-tags { display: flex; gap: 7px; font-size: .72rem; }
+  .pr-tag { padding: 3px 9px; border-radius: 999px; background: var(--surface-2); border: 1px solid var(--line); color: var(--muted); font-weight: 600; }
+  .pr-rec { color: var(--muted); font-size: .88rem; margin-top: 6px; padding-left: 37px; }
+
+  .pop { position: absolute; z-index: 60; max-width: 250px; background: var(--ink); color: #fff; border-radius: 12px; padding: 12px 14px; font-size: .82rem; line-height: 1.5; box-shadow: 0 16px 40px -12px rgba(0,0,0,.4); pointer-events: none; }
+  .pop b { color: #fff; }
+  .pop .pr { display: flex; justify-content: space-between; gap: 14px; color: #D7D0E4; }
+  .pop .pr span:last-child { color: #fff; font-weight: 600; }
+  .pop .ph { font-weight: 600; margin-bottom: 6px; }
+
+  .foot { color: var(--faint); font-size: .8rem; text-align: center; margin-top: 30px; }
+  @media (max-width: 880px) { .kpis { grid-template-columns: 1fr 1fr; } .two { grid-template-columns: 1fr; } .hm-row { grid-template-columns: 150px repeat(5, 1fr); } }
+</style>
+</head>
+<body>
+<div class="mockbar">Enterprise report (Level 2) &middot; <b>illustrative sample data</b></div>
+<div class="wrap">
+
+<header>
+  <div class="brand">
+    <div class="mark">
+      <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#9747EF"/><stop offset="1" stop-color="#FA5F09"/></linearGradient></defs>
+        <polygon points="50,10 86,30 86,70 50,90 14,70 14,30" fill="none" stroke="url(#g)" stroke-width="4" stroke-linejoin="round"/>
+        <text x="50" y="60" text-anchor="middle" font-family="Georgia, serif" font-size="30" font-weight="bold" fill="url(#g)">AR</text>
+      </svg>
+    </div>
+    <div>
+      <div class="wm">Arielle Rolland Advisory</div>
+      <div class="ti">Enterprise maturity report</div>
+    </div>
+  </div>
+  <div class="scope">Acme Corporation &middot; <b id="s-n">26</b> responses across <b id="s-u">4</b> business units</div>
+</header>
+
+<div class="kpis" id="kpis"></div>
+
+<div class="section-label">Maturity heatmap</div>
+<p class="section-sub">Each theme by business unit, scored 1 to 5. Hover any cell for today versus target, how much it matters, and how much the unit agrees. The dashed column is the enterprise average.</p>
+<div class="panel">
+  <div class="hm" id="hm"></div>
+  <div class="legend">
+    <span class="sw"><i style="background:#FBE4D8"></i>Below 2.5</span>
+    <span class="sw"><i style="background:#FBF1DA"></i>2.5 to 3.4</span>
+    <span class="sw"><i style="background:#E4F3E9"></i>3.5 to 4.1</span>
+    <span class="sw"><i style="background:#CFECD8"></i>4.2 and up</span>
+  </div>
+</div>
+
+<div class="section-label">How the units compare</div>
+<div class="two">
+  <div class="panel">
+    <p class="section-sub" style="margin-top:0;">Overall maturity by unit, leaders to laggards.</p>
+    <ul class="rank" id="leaders"></ul>
+  </div>
+  <div class="panel">
+    <p class="section-sub" style="margin-top:0;">Where units disagree most. Low agreement is itself a finding.</p>
+    <div id="align"></div>
+  </div>
+</div>
+
+<div class="section-label">Strategic priorities, weighted by what matters</div>
+<p class="section-sub">Ranked by importance multiplied by the gap to target, so effort goes where it both matters and falls short, not just where the score is low.</p>
+<div class="panel"><ol class="prio" id="prio"></ol></div>
+
+<p class="foot">Illustrative example with sample data. The real report would read live responses, grouped by the department each person selects.</p>
+</div>
+
+<div id="pop" class="pop" style="display:none"></div>
+
+<script>
+const THEMES = ["Data ownership and direction","Trustworthy data","Finding and understanding data","Systems and connections","Security and compliance","Insight and confidence","AI strategy and value","Governing AI","AI skills and adoption","Process and agents"];
+const WAVES = [1,1,2,1,1,2,3,3,3,3];
+const WLAB = {1:"Wave 1",2:"Wave 2",3:"Wave 3"};
+const UNITS = ["Supply Chain","Quality","Commercial","IT"];
+const NU = [8,6,7,5]; // respondents per unit
+
+// current maturity [theme][unit]
+const CUR = [
+  [3.2,3.6,2.8,3.0],[3.4,3.8,2.9,3.1],[2.8,3.0,2.6,3.4],[3.0,3.1,2.9,4.0],[3.3,3.7,3.0,4.1],
+  [2.9,3.0,3.6,3.2],[2.2,2.4,2.6,2.8],[2.0,2.6,2.1,2.7],[2.1,2.2,2.5,2.6],[2.3,2.5,2.2,2.6]
+];
+// importance 0 low, 1 medium, 2 high
+const IMP = [
+  [2,2,1,2],[2,2,2,2],[1,1,1,2],[2,1,1,2],[2,2,1,2],
+  [1,1,2,1],[1,1,2,2],[1,2,1,2],[1,1,2,2],[1,1,1,2]
+];
+// disagreement 0 to 1 (higher = units agree less internally)
+const SD = [
+  [.4,.3,.7,.4],[.3,.3,.5,.4],[.5,.4,.6,.3],[.4,.4,.5,.3],[.3,.3,.6,.3],
+  [.5,.4,.4,.5],[.7,.6,.5,.6],[.6,.5,.7,.5],[.6,.6,.5,.5],[.7,.6,.6,.5]
+];
+const IMPLAB = ["Low","Medium","High"];
+function tarOf(ti,ui){ return Math.min(5, CUR[ti][ui] + (WAVES[ti]===3 ? 1.6 : 0.7)); }
+function entCur(ti){ let s=0,n=0; UNITS.forEach((_,u)=>{ s+=CUR[ti][u]*NU[u]; n+=NU[u]; }); return s/n; }
+function entTar(ti){ let s=0,n=0; UNITS.forEach((_,u)=>{ s+=tarOf(ti,u)*NU[u]; n+=NU[u]; }); return s/n; }
+function entImp(ti){ let s=0,n=0; UNITS.forEach((_,u)=>{ s+=IMP[ti][u]*NU[u]; n+=NU[u]; }); return s/n; }
+function unitAvg(ui){ let s=0; THEMES.forEach((_,t)=> s+=CUR[t][ui]); return s/THEMES.length; }
+
+function cellStyle(v){
+  if (v<2.5) return ["#FBE4D8","#B23C13"];
+  if (v<3.5) return ["#FBF1DA","#8A6516"];
+  if (v<4.2) return ["#E4F3E9","#1B7A3F"];
+  return ["#CFECD8","#0F6B33"];
+}
+
+/* KPIs */
+function renderKpis(){
+  const entAll = THEMES.map((_,t)=>entCur(t)).reduce((a,b)=>a+b,0)/THEMES.length;
+  const tarAll = THEMES.map((_,t)=>entTar(t)).reduce((a,b)=>a+b,0)/THEMES.length;
+  const prio = priorities()[0];
+  const lead = UNITS.map((u,i)=>({u, v:unitAvg(i)})).sort((a,b)=>b.v-a.v);
+  document.getElementById("kpis").innerHTML = `
+    <div class="kpi hero"><div class="k-lab">Enterprise maturity</div><div class="k-val">${entAll.toFixed(1)}<small> / 5</small></div><div class="k-sub">target ${tarAll.toFixed(1)}, gap +${(tarAll-entAll).toFixed(1)}</div></div>
+    <div class="kpi"><div class="k-lab">Strongest unit</div><div class="k-val" style="font-size:1.5rem">${lead[0].u}</div><div class="k-sub">${lead[0].v.toFixed(1)} / 5 overall</div></div>
+    <div class="kpi"><div class="k-lab">Most behind</div><div class="k-val" style="font-size:1.5rem">${lead[lead.length-1].u}</div><div class="k-sub">${lead[lead.length-1].v.toFixed(1)} / 5 overall</div></div>
+    <div class="kpi"><div class="k-lab">Top priority</div><div class="k-val" style="font-size:1.25rem;line-height:1.2">${prio.name}</div><div class="k-sub">matters most, biggest gap</div></div>`;
+}
+
+/* heatmap */
+function renderHeatmap(){
+  const hm = document.getElementById("hm");
+  let head = `<div class="hm-row"><div class="hm-head first">Theme</div>${UNITS.map(u=>`<div class="hm-head">${u}</div>`).join("")}<div class="hm-head ent">Enterprise</div></div>`;
+  let rows = THEMES.map((th,ti)=>{
+    const cells = UNITS.map((u,ui)=>{
+      const v = CUR[ti][ui], st = cellStyle(v);
+      return `<div class="cell" style="background:${st[0]};color:${st[1]}" onmouseenter="cellPop(event,${ti},${ui})" onmouseleave="hidePop()">${v.toFixed(1)}</div>`;
+    }).join("");
+    const ev = entCur(ti), est = cellStyle(ev);
+    const entCell = `<div class="cell ent" style="background:${est[0]};color:${est[1]}" onmouseenter="cellPop(event,${ti},-1)" onmouseleave="hidePop()">${ev.toFixed(1)}</div>`;
+    return `<div class="hm-row"><div class="hm-theme"><span class="wv wv${WAVES[ti]}">${WLAB[WAVES[ti]].replace("Wave ","W")}</span>${th}</div>${cells}${entCell}</div>`;
+  }).join("");
+  hm.innerHTML = head + rows;
+}
+function cellPop(e, ti, ui){
+  const pop = document.getElementById("pop");
+  let cur, tar, imp, sd, n, who;
+  if (ui===-1){ cur=entCur(ti); tar=entTar(ti); imp=entImp(ti); sd=SD[ti].reduce((a,b)=>a+b)/4; n=NU.reduce((a,b)=>a+b); who="Enterprise"; }
+  else { cur=CUR[ti][ui]; tar=tarOf(ti,ui); imp=IMP[ti][ui]; sd=SD[ti][ui]; n=NU[ui]; who=UNITS[ui]; }
+  const cons = sd>=.6 ? "Low, they disagree" : sd>=.45 ? "Mixed" : "High";
+  const impTxt = ui===-1 ? (imp>=1.5?"High":imp>=0.8?"Medium":"Low") : IMPLAB[imp];
+  pop.innerHTML = `<div class="ph">${who} &middot; ${THEMES[ti]}</div>
+    <div class="pr"><span>Today</span><span>${cur.toFixed(1)} / 5</span></div>
+    <div class="pr"><span>Target</span><span>${tar.toFixed(1)} / 5</span></div>
+    <div class="pr"><span>Importance</span><span>${impTxt}</span></div>
+    <div class="pr"><span>Agreement</span><span>${cons}</span></div>
+    <div class="pr"><span>Responses</span><span>${n}</span></div>`;
+  pop.style.display = "block";
+  const r = e.currentTarget.getBoundingClientRect(), w = pop.offsetWidth;
+  let left = r.left + window.scrollX + r.width/2 - w/2;
+  left = Math.max(window.scrollX+8, Math.min(left, window.scrollX+document.documentElement.clientWidth-w-8));
+  pop.style.left = left+"px"; pop.style.top = (r.bottom + window.scrollY + 8)+"px";
+}
+function hidePop(){ document.getElementById("pop").style.display = "none"; }
+
+/* leaders + alignment */
+function renderCompare(){
+  const lead = UNITS.map((u,i)=>({u, v:unitAvg(i)})).sort((a,b)=>b.v-a.v);
+  document.getElementById("leaders").innerHTML = lead.map(x=>
+    `<li><span class="nm">${x.u}</span><span class="ba"><i style="width:${x.v/5*100}%"></i></span><span class="vv">${x.v.toFixed(1)}</span></li>`).join("");
+  const al = THEMES.map((th,ti)=>({th, sd: SD[ti].reduce((a,b)=>a+b)/4})).sort((a,b)=>b.sd-a.sd).slice(0,3);
+  document.getElementById("align").innerHTML = al.map(x=>
+    `<div class="align-item"><div class="ai-t">${x.th}</div><div class="ai-s">Units see this very differently. <b>Alignment gap</b>, agree on a shared view first.</div></div>`).join("");
+}
+
+/* materiality-weighted priorities */
+function priorities(){
+  return THEMES.map((th,ti)=>{
+    const gap = entTar(ti)-entCur(ti), impN = entImp(ti)/2;
+    return { name: th, wave: WAVES[ti], score: impN*gap, gap, imp: entImp(ti), cur: entCur(ti) };
+  }).sort((a,b)=> (a.wave-b.wave) || (b.score-a.score));
+}
+const PRREC = {
+ "Data ownership and direction":"Name owners for each major data domain and agree a short data strategy.",
+ "Trustworthy data":"Agree what good looks like for key data and add automated quality checks.",
+ "Finding and understanding data":"Stand up a simple catalogue with plain definitions and owners.",
+ "Systems and connections":"Replace the most fragile manual hand-offs with reliable, monitored connections.",
+ "Security and compliance":"Set role-based access, protect sensitive data, and run regular access reviews.",
+ "Insight and confidence":"Standardise a few trusted reports and add basic data-literacy training.",
+ "AI strategy and value":"Pick two or three high-value use cases with a senior owner and a measurable outcome.",
+ "Governing AI":"Keep a register of AI uses with owners and risk ratings, and review before go-live.",
+ "AI skills and adoption":"Offer practical, role-based AI training and a small set of approved tools.",
+ "Process and agents":"Document and standardise key processes before automating them."
+};
+function renderPriorities(){
+  const top = priorities().filter(p=> p.score>0.2 || p.wave===1).slice(0,6);
+  document.getElementById("prio").innerHTML = top.map((p,n)=>
+    `<li><div class="pr-top"><span class="pr-num">${n+1}</span><span class="pr-name">${p.name}</span>
+      <span class="pr-tags"><span class="pr-tag">${WLAB[p.wave]}</span><span class="pr-tag">matters: ${p.imp>=1.5?"High":p.imp>=0.8?"Medium":"Low"}</span><span class="pr-tag">gap +${p.gap.toFixed(1)}</span></span></div>
+      <div class="pr-rec">${PRREC[p.name]}</div></li>`).join("");
+}
+
+renderKpis(); renderHeatmap(); renderCompare(); renderPriorities();
+</script>
+</body>
+</html>
