@@ -204,121 +204,81 @@
     h1,.q-text,.res-title,.section-label,.panel h3,.tile .t-now,.force .f-name,.force .f-score,.veq-term { color:#16121f; }
   }
 
-  /* ---- bespoke landing ---- */
-  .landing-wrap { max-width: 1120px; margin: 0 auto; min-height: 100vh; display: flex; flex-direction: column; justify-content: center; gap: 22px; padding: 56px 20px; position: relative; z-index: 1; }
-  .hero { display: grid; grid-template-columns: 1.04fr .96fr; gap: 22px; align-items: stretch; }
-  .hero-left { padding: 40px 42px 30px; position: relative; overflow: hidden; text-align: left; }
-  .hero-left::before { content:""; position: absolute; top:0; left:0; right:0; height:3px; background: var(--grad); }
-  .hero-left .logo { margin-bottom: 18px; }
-  .hero-left .wordmark { text-align: left; }
-  .hero-left h1 { font-size: 2.5rem; text-align: left; margin-bottom: 14px; }
-  .hero-left .sub { text-align: left; margin: 0 0 24px; max-width: none; }
-  .hero-right { display: flex; }
-  .preview { padding: 24px 26px 20px; display: flex; flex-direction: column; gap: 13px; width: 100%; }
-  .pv-label { font-size: .68rem; text-transform: uppercase; letter-spacing: .12em; color: var(--purple-light); display: flex; align-items: center; gap: 9px; font-weight: 600; }
-  .pv-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--orange); box-shadow: 0 0 0 4px rgba(250,95,9,.18); animation: pvpulse 2s infinite; }
-  @keyframes pvpulse { 0%,100%{opacity:1} 50%{opacity:.35} }
-  .pv-theme { display: flex; align-items: center; gap: 13px; }
-  .pv-icon { width: 48px; height: 48px; border-radius: 14px; background: rgba(151,71,239,.14); border: 1px solid var(--line-2); display: flex; align-items: center; justify-content: center; color: var(--purple-light); flex: 0 0 auto; }
-  .pv-icon svg { width: 25px; height: 25px; }
-  #pv-name { font-weight: 600; font-size: 1.04rem; color: #fff; }
-  .pv-q { font-family: var(--display); font-size: 1.32rem; line-height: 1.26; color: #fff; margin: 2px 0 2px; min-height: 3.2em; }
-  .slicer { background: rgba(255,255,255,.03); border: 1px solid var(--line); border-radius: 14px; padding: 15px 17px; }
-  .slicer-head { display: flex; justify-content: space-between; align-items: baseline; font-size: .8rem; gap: 10px; }
-  .slicer-head span:first-child { color: var(--muted); }
-  #sl-level { color: var(--purple-light); font-weight: 600; white-space: nowrap; }
-  input[type=range]#slicer { -webkit-appearance: none; appearance: none; width: 100%; height: 8px; border-radius: 999px; background-image: linear-gradient(90deg,#9747EF,#FA5F09); background-color: rgba(255,255,255,.10); background-repeat: no-repeat; background-size: var(--pct,50%) 100%; cursor: pointer; margin: 12px 0 10px; }
-  input[type=range]#slicer::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 20px; height: 20px; border-radius: 50%; background: #fff; border: 3px solid var(--orange); box-shadow: 0 4px 12px rgba(0,0,0,.55); cursor: pointer; }
-  input[type=range]#slicer::-moz-range-thumb { width: 18px; height: 18px; border-radius: 50%; background: #fff; border: 3px solid var(--orange); cursor: pointer; }
-  .sl-phrase { color: var(--ink); font-size: .9rem; margin: 4px 0 0; min-height: 2.7em; line-height: 1.5; }
-  .pv-dots { display: flex; gap: 7px; margin-top: auto; padding-top: 8px; flex-wrap: wrap; }
-  .pvd { width: 9px; height: 9px; border-radius: 50%; border: none; background: rgba(255,255,255,.16); cursor: pointer; padding: 0; transition: background .2s, transform .2s; }
-  .pvd:hover { background: var(--purple-light); }
-  .pvd.on { background: var(--grad-2); transform: scale(1.3); }
-  .theme-strip { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; }
-  .tchip { display: flex; align-items: center; gap: 10px; padding: 12px 13px; border: 1px solid var(--line); border-radius: 13px; background: rgba(255,255,255,.025); font-size: .79rem; color: var(--muted); transition: border-color .15s, background .15s, color .15s; }
-  .tchip:hover { border-color: var(--line-2); background: rgba(255,255,255,.05); color: var(--ink); }
-  .tchip-i { width: 30px; height: 30px; border-radius: 9px; background: rgba(151,71,239,.12); display: flex; align-items: center; justify-content: center; color: var(--purple-light); flex: 0 0 auto; }
-  .tchip-i svg { width: 17px; height: 17px; }
+  /* ---- wizard theme chip icon ---- */
   .q-theme { display: inline-flex; align-items: center; gap: 8px; }
   .q-theme svg { width: 15px; height: 15px; }
-  @media (max-width: 880px) {
-    .hero { grid-template-columns: 1fr; }
-    .theme-strip { grid-template-columns: repeat(2, 1fr); }
-    .hero-left { padding: 32px 26px; }
-    .hero-left h1 { font-size: 2.1rem; }
-  }
+
+  /* ---- per-theme note ---- */
+  .note-block { margin-top: 4px; }
+  .note-label { display: block; font-size: .82rem; font-weight: 600; color: var(--muted); margin-bottom: 8px; }
+  .note-label span { color: var(--faint); font-weight: 500; }
+  .note-input { width: 100%; min-height: 62px; resize: vertical; padding: 12px 14px; font-family: inherit; font-size: .92rem; color: var(--ink); background: rgba(255,255,255,.03); border: 1px solid var(--line-2); border-radius: 12px; line-height: 1.5; }
+  .note-input::placeholder { color: var(--faint); }
+  .note-input:focus { outline: none; border-color: var(--purple); background: rgba(151,71,239,.08); box-shadow: 0 0 0 3px rgba(151,71,239,.20); }
+
+  /* ---- wave tags + comments ---- */
+  .wavetag { display: inline-block; padding: 3px 9px; border-radius: 999px; font-size: .7rem; font-weight: 700; letter-spacing: .02em; white-space: nowrap; }
+  .wavetag.w1 { background: rgba(250,95,9,.16); color: #ffb38a; }
+  .wavetag.w2 { background: rgba(151,71,239,.18); color: var(--purple-light); }
+  .wavetag.w3 { background: rgba(255,255,255,.08); color: var(--muted); }
+  .note-row { padding: 12px 0; border-bottom: 1px solid var(--line); }
+  .note-row:last-child { border-bottom: none; }
+  .note-theme { font-weight: 600; font-size: .85rem; color: var(--purple-light); margin-bottom: 3px; }
+  .note-text { color: var(--ink); font-size: .92rem; line-height: 1.55; white-space: pre-wrap; }
 </style>
 </head>
 <body>
 
 <!-- ============ LANDING / INTAKE ============ -->
-<section id="view-landing" class="landing-wrap">
-  <div class="hero">
-    <div class="hero-left card">
-      <div class="logo">
-        <svg width="50" height="50" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <linearGradient id="hlg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#9747EF"/><stop offset="1" stop-color="#FA5F09"/></linearGradient>
-            <linearGradient id="hlt" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#C49BF4"/><stop offset="1" stop-color="#FFFFFF"/></linearGradient>
-          </defs>
-          <polygon points="50,8 88,29 88,71 50,92 12,71 12,29" fill="none" stroke="url(#hlg)" stroke-width="3.5" stroke-linejoin="round"/>
-          <text x="50" y="60" text-anchor="middle" font-family="Georgia, serif" font-size="30" font-weight="bold" letter-spacing="-1" fill="url(#hlt)">AR</text>
-        </svg>
-      </div>
-      <span class="wordmark" id="wordmark">Arielle Rolland Advisory</span>
-      <h1>Data and AI<br>Maturity Assessment</h1>
-      <p class="sub">In about five minutes, see where your team stands today, where you want to be, and whether the real constraint is your data, your AI, or your people.</p>
-      <div class="field">
-        <label>Organisation name <span class="req">*</span></label>
-        <input type="text" id="org-name" placeholder="Enter your organisation name" autocomplete="off" />
-        <div class="err" id="org-err">Please enter your organisation name to begin.</div>
-      </div>
-      <div class="field row2">
-        <div>
-          <label>Department <span class="req">*</span></label>
-          <select id="dept">
-            <option value="">Choose one</option>
-            <option>Commercial or Sales</option>
-            <option>Marketing</option>
-            <option>Supply Chain or Operations</option>
-            <option>Manufacturing</option>
-            <option>Quality</option>
-            <option>Regulatory Affairs</option>
-            <option>R&amp;D or Clinical</option>
-            <option>Finance</option>
-            <option>HR or People</option>
-            <option>IT or Digital</option>
-            <option>Other</option>
-          </select>
-        </div>
-        <div>
-          <label>Your role <span class="req">*</span></label>
-          <input type="text" id="role" placeholder="e.g. Head of Quality" autocomplete="off" />
-        </div>
-      </div>
-      <div class="err" id="dr-err" style="margin-bottom:10px;">Please choose a department and enter your role.</div>
-      <button class="btn btn-primary" onclick="startAssessment()">Start assessment</button>
-      <button class="btn btn-ghost" onclick="showSample()">View sample report</button>
-      <div class="divider"></div>
-      <p class="powered" id="powered">Powered by <b>Arielle Rolland Advisory</b> &middot; Strategic Data &amp; AI Leadership</p>
+<section id="view-landing" class="center-wrap">
+  <div class="card landing">
+    <div class="logo">
+      <svg width="50" height="50" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="hlg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#9747EF"/><stop offset="1" stop-color="#FA5F09"/></linearGradient>
+          <linearGradient id="hlt" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#C49BF4"/><stop offset="1" stop-color="#FFFFFF"/></linearGradient>
+        </defs>
+        <polygon points="50,8 88,29 88,71 50,92 12,71 12,29" fill="none" stroke="url(#hlg)" stroke-width="3.5" stroke-linejoin="round"/>
+        <text x="50" y="60" text-anchor="middle" font-family="Georgia, serif" font-size="30" font-weight="bold" letter-spacing="-1" fill="url(#hlt)">AR</text>
+      </svg>
     </div>
-
-    <div class="hero-right">
-      <div class="preview card">
-        <div class="pv-label"><span class="pv-dot"></span> A live taste of the questionnaire</div>
-        <div class="pv-theme"><span class="pv-icon" id="pv-icon"></span><span id="pv-name">Theme</span></div>
-        <p class="pv-q" id="pv-q">Loading…</p>
-        <div class="slicer">
-          <div class="slicer-head"><span>Slide to feel the scale</span><span id="sl-level">Level 3 · Defined</span></div>
-          <input type="range" min="1" max="5" value="3" id="slicer" />
-          <p class="sl-phrase" id="sl-phrase"></p>
-        </div>
-        <div class="pv-dots" id="pv-dots"></div>
+    <span class="wordmark" id="wordmark">Arielle Rolland Advisory</span>
+    <h1>Data and AI Maturity Assessment</h1>
+    <p class="sub">A short, internal check of where your team stands today, and where you want to be, across data and AI. Ten themes, about five minutes.</p>
+    <div class="field">
+      <label>Organisation name <span class="req">*</span></label>
+      <input type="text" id="org-name" placeholder="Enter your organisation name" autocomplete="off" />
+      <div class="err" id="org-err">Please enter your organisation name to begin.</div>
+    </div>
+    <div class="field row2">
+      <div>
+        <label>Department <span class="req">*</span></label>
+        <select id="dept">
+          <option value="">Choose one</option>
+          <option>Commercial or Sales</option>
+          <option>Marketing</option>
+          <option>Supply Chain or Operations</option>
+          <option>Manufacturing</option>
+          <option>Quality</option>
+          <option>Regulatory Affairs</option>
+          <option>R&amp;D or Clinical</option>
+          <option>Finance</option>
+          <option>HR or People</option>
+          <option>IT or Digital</option>
+          <option>Other</option>
+        </select>
+      </div>
+      <div>
+        <label>Your role <span class="req">*</span></label>
+        <input type="text" id="role" placeholder="e.g. Head of Quality" autocomplete="off" />
       </div>
     </div>
+    <div class="err" id="dr-err" style="margin-bottom:10px;">Please choose a department and enter your role.</div>
+    <button class="btn btn-primary" onclick="startAssessment()">Start assessment</button>
+    <button class="btn btn-ghost" onclick="showSample()">View sample report</button>
+    <div class="divider"></div>
+    <p class="powered" id="powered">Powered by <b>Arielle Rolland Advisory</b> &middot; Strategic Data &amp; AI Leadership</p>
   </div>
-  <div class="theme-strip" id="theme-strip"></div>
 </section>
 
 <!-- ============ WIZARD ============ -->
@@ -333,6 +293,7 @@
     <span class="q-theme" id="q-theme">Theme</span>
     <div id="q-main"></div>
     <div id="q-sub"></div>
+    <div id="q-note"></div>
   </div>
 
   <div class="wiz-nav">
@@ -392,11 +353,11 @@
     <div id="r-radar"></div>
   </div>
 
-  <div class="section-label">Where to focus, ranked by the gap you chose</div>
+  <div class="section-label">Where to focus, and in what order</div>
   <div class="panel">
-    <p class="psub">Themes are ordered by the gap between today and your target. Where you set no target gap, there is no appetite to change yet, so there is no need to focus there now.</p>
+    <p class="psub">Not everything can be a priority at once, so the order matters. The wave shows what should be in place first. Foundations come before AI, because AI only pays off on data people can trust. Within a wave, the gap you chose sets the order, and a weak foundation is flagged to address first even if you set a small target. Wave 1 is foundations (ownership, trustworthy data, reliable systems, security). Wave 2 makes data usable. Wave 3 scales AI.</p>
     <table>
-      <thead><tr><th>Theme</th><th class="num">Today</th><th class="num">Target</th><th class="num">Gap</th><th>Focus</th></tr></thead>
+      <thead><tr><th>Theme</th><th>Wave</th><th class="num">Today</th><th class="num">Target</th><th class="num">Gap</th><th>Recommended</th></tr></thead>
       <tbody id="r-table"></tbody>
     </table>
   </div>
@@ -411,6 +372,9 @@
     <div class="veq" id="r-veq"></div>
     <ul class="ticks" id="r-focuslist"></ul>
   </div>
+
+  <div class="section-label hidden" id="r-notes-label">Comments by theme</div>
+  <div class="panel hidden" id="r-notes-panel"></div>
 
   <p class="footnote">Internal assessment for one organisation. Scores reflect the views of the person completing it. Run it across departments and roles to compare perspectives.</p>
 </section>
@@ -624,6 +588,10 @@ const ICONS = [
 ];
 function iconSvg(i) { return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">'+ICONS[i]+'</svg>'; }
 
+/* recommended sequencing: which themes must be in place first */
+const WAVES = [1,1,1,2,1,2,3,3,3,3];
+const WAVE_LABEL = { 1:"Wave 1", 2:"Wave 2", 3:"Wave 3" };
+
 /* value equation: term -> list of [themeIndex, 'main'|'sub'] */
 const VALUE_TERMS = [
   { name: "Artificial intelligence", group: "intel", desc: "scale, speed, prediction",
@@ -641,7 +609,7 @@ const AI_THEMES = [6,7,8,9];         // themes 7-10
 /* ---- state ---- */
 let state = null;
 function blankAnswers() {
-  return THEMES.map(() => ({ mainCur: null, mainTar: null, subCur: null, subTar: null }));
+  return THEMES.map(() => ({ mainCur: null, mainTar: null, subCur: null, subTar: null, note: "" }));
 }
 
 function show(view) {
@@ -692,6 +660,15 @@ function questionHTML(themeIdx, part) {
   </div>`;
 }
 
+function noteHTML(i) {
+  return `<div class="qblock note-block">
+    <label class="note-label">Anything to add on this theme? <span>(optional)</span></label>
+    <textarea class="note-input" rows="2" oninput="setNote(${i}, this.value)" placeholder="Context, examples, blockers, anything worth capturing.">${escapeHtml(state.answers[i].note || "")}</textarea>
+  </div>`;
+}
+function setNote(i, v) { state.answers[i].note = v; }
+function escapeHtml(s) { return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+
 function renderTheme() {
   const i = state.idx, t = THEMES[i];
   document.getElementById("q-theme").innerHTML = iconSvg(i) + ` Theme ${i+1}: ${t.key}`;
@@ -699,6 +676,7 @@ function renderTheme() {
   document.getElementById("wiz-bar").style.width = ((i)/THEMES.length*100 + 5) + "%";
   document.getElementById("q-main").innerHTML = questionHTML(i, "main");
   document.getElementById("q-sub").innerHTML = questionHTML(i, "sub");
+  document.getElementById("q-note").innerHTML = noteHTML(i);
   document.getElementById("btn-back").disabled = i === 0;
   const a = state.answers[i];
   const done = a.mainCur !== null && a.subCur !== null;
@@ -756,19 +734,22 @@ function renderResults(org, metaLine, answers) {
 
   drawRadar(THEMES.map(t=>t.key), cur, tar);
 
-  /* priority table, ranked by gap */
-  const rows = THEMES.map((t,i)=>({ name: t.key, now: cur[i], tar: tar[i], gap: tar[i]-cur[i] }));
-  rows.sort((a,b)=> b.gap - a.gap || a.now - b.now);
+  /* recommended order: foundations (wave) first, then weakest, then the gap chosen */
+  const rows = THEMES.map((t,i)=>({ name: t.key, wave: WAVES[i], now: cur[i], tar: tar[i], gap: tar[i]-cur[i] }));
+  rows.sort((a,b)=> a.wave - b.wave || a.now - b.now || b.gap - a.gap);
   const tbody = document.getElementById("r-table"); tbody.innerHTML = "";
   rows.forEach(r => {
-    const gcls = r.gap >= 1 ? "big" : r.gap >= 0.5 ? "mid" : "none";
-    const focus = r.gap >= 1 ? `<span class="focuspill yes">Priority</span>`
-      : r.gap >= 0.5 ? `<span class="focuspill watch">Worth a look</span>`
-      : `<span class="focuspill no">No change wanted</span>`;
+    const foundation = r.wave === 1 && r.now < 3;
+    let pill, gcls;
+    if (foundation) { pill = `<span class="focuspill yes">Foundation, do first</span>`; gcls = "big"; }
+    else if (r.gap >= 1) { pill = `<span class="focuspill yes">Priority</span>`; gcls = "big"; }
+    else if (r.gap >= 0.5) { pill = `<span class="focuspill watch">Worth a look</span>`; gcls = "mid"; }
+    else { pill = `<span class="focuspill no">Hold for now</span>`; gcls = "none"; }
     const tr = document.createElement("tr");
-    if (r.gap < 0.5) tr.className = "flat";
-    tr.innerHTML = `<td>${r.name}</td><td class="num">${r.now.toFixed(1)}</td><td class="num">${r.tar.toFixed(1)}</td>
-      <td class="num gap ${gcls}">${r.gap>0?"+":""}${r.gap.toFixed(1)}</td><td>${focus}</td>`;
+    if (!foundation && r.gap < 0.5) tr.className = "flat";
+    tr.innerHTML = `<td>${r.name}</td><td><span class="wavetag w${r.wave}">${WAVE_LABEL[r.wave]}</span></td>
+      <td class="num">${r.now.toFixed(1)}</td><td class="num">${r.tar.toFixed(1)}</td>
+      <td class="num gap ${gcls}">${r.gap>0?"+":""}${r.gap.toFixed(1)}</td><td>${pill}</td>`;
     tbody.appendChild(tr);
   });
 
@@ -849,7 +830,16 @@ function renderResults(org, metaLine, answers) {
       `<li>${tick(false)}<span>${r.name}: move from ${r.now.toFixed(1)} toward ${r.tar.toFixed(1)}.</span></li>`));
   }
 
+  renderNotes(answers);
   show("results");
+}
+function renderNotes(answers) {
+  const notes = THEMES.map((t,i)=>({ name: t.key, note: (answers[i].note || "").trim() })).filter(n=>n.note);
+  const nl = document.getElementById("r-notes-label"), np = document.getElementById("r-notes-panel");
+  if (notes.length) {
+    np.innerHTML = notes.map(n=>`<div class="note-row"><div class="note-theme">${escapeHtml(n.name)}</div><div class="note-text">${escapeHtml(n.note)}</div></div>`).join("");
+    nl.classList.remove("hidden"); np.classList.remove("hidden");
+  } else { nl.classList.add("hidden"); np.classList.add("hidden"); }
 }
 
 function tick(good) {
@@ -950,33 +940,6 @@ function copyLink() {
 function toast() { const t=document.getElementById("toast"); t.classList.add("show"); setTimeout(()=>t.classList.remove("show"),1700); }
 document.getElementById("org-name").addEventListener("keydown", e=>{ if(e.key==="Enter") startAssessment(); });
 
-/* ---- landing: animated questionnaire preview + maturity slicer ---- */
-let pvIdx = 0, pvTimer = null;
-function lvlPhrase() { return THEMES[pvIdx].main.opts[(+document.getElementById("slicer").value) - 1]; }
-function updateSlicer() {
-  const v = +document.getElementById("slicer").value;
-  document.getElementById("slicer").style.setProperty("--pct", ((v-1)/4*100) + "%");
-  document.getElementById("sl-level").textContent = "Level " + v + " \u00b7 " + LEVELS[v-1];
-  document.getElementById("sl-phrase").textContent = lvlPhrase();
-}
-function renderPreview() {
-  document.getElementById("pv-icon").innerHTML = iconSvg(pvIdx);
-  document.getElementById("pv-name").textContent = THEMES[pvIdx].key;
-  document.getElementById("pv-q").textContent = THEMES[pvIdx].main.q;
-  updateSlicer();
-  document.querySelectorAll("#pv-dots .pvd").forEach((d,i)=> d.classList.toggle("on", i===pvIdx));
-}
-function restartPv() { if (pvTimer) clearInterval(pvTimer); pvTimer = setInterval(()=>{ pvIdx=(pvIdx+1)%THEMES.length; renderPreview(); }, 4200); }
-function initLanding() {
-  if (!document.getElementById("slicer")) return;
-  const dots = document.getElementById("pv-dots"); dots.innerHTML = "";
-  THEMES.forEach((t,i)=>{ const b=document.createElement("button"); b.className="pvd"; b.title=t.key; b.onclick=()=>{ pvIdx=i; renderPreview(); restartPv(); }; dots.appendChild(b); });
-  const strip = document.getElementById("theme-strip"); strip.innerHTML = "";
-  THEMES.forEach((t,i)=> strip.insertAdjacentHTML("beforeend", '<div class="tchip"><span class="tchip-i">'+iconSvg(i)+'</span><span>'+t.key+'</span></div>'));
-  document.getElementById("slicer").addEventListener("input", updateSlicer);
-  renderPreview(); restartPv();
-}
-initLanding();
 </script>
 </body>
 </html>
