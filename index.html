@@ -231,6 +231,30 @@
   .rec-pop { position: absolute; z-index: 60; max-width: 320px; width: max-content; background: var(--surface-3); border: 1px solid var(--line-2); border-radius: 14px; padding: 14px 16px; box-shadow: 0 18px 44px -12px rgba(0,0,0,.75); }
   .rec-pop .rec-head { display: flex; align-items: center; gap: 8px; font-weight: 600; font-size: .9rem; color: #fff; margin-bottom: 8px; }
   .rec-pop .rec-body { font-size: .87rem; line-height: 1.55; color: var(--ink); }
+  .verdict-next { margin-top: 13px; padding-top: 13px; border-top: 1px solid rgba(151,71,239,.3); font-size: .95rem; line-height: 1.6; }
+  .verdict-next .vn-lab { display: inline-block; font-size: .64rem; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: #fff; background: var(--grad-2); padding: 3px 9px; border-radius: 999px; margin-right: 8px; vertical-align: 1px; }
+  ol.nextsteps { list-style: none; margin: 0; padding: 0; }
+  ol.nextsteps li { padding: 15px 0; border-bottom: 1px solid var(--line); }
+  ol.nextsteps li:last-child { border-bottom: none; padding-bottom: 2px; }
+  .ns-top { display: flex; align-items: center; gap: 11px; margin-bottom: 7px; flex-wrap: wrap; }
+  .ns-num { width: 26px; height: 26px; border-radius: 50%; background: var(--grad-2); color: #fff; font-weight: 700; font-size: .82rem; display: flex; align-items: center; justify-content: center; flex: 0 0 auto; }
+  .ns-name { font-weight: 600; color: #fff; font-size: .98rem; }
+  .ns-rec { color: var(--muted); font-size: .9rem; line-height: 1.55; padding-left: 37px; }
+  .roadmap { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .road-stage { background: var(--surface-2); border: 1px solid var(--line); border-radius: 16px; padding: 18px; }
+  .road-stage-head { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+  .road-badge { width: 32px; height: 32px; border-radius: 10px; background: var(--grad-2); color: #fff; font-weight: 700; display: flex; align-items: center; justify-content: center; flex: 0 0 auto; font-family: var(--display); font-size: 1.05rem; }
+  .road-wave { font-size: .66rem; text-transform: uppercase; letter-spacing: .1em; color: var(--purple-light); font-weight: 600; }
+  .road-name { font-weight: 600; color: #fff; font-size: .96rem; }
+  .road-chips { display: flex; flex-direction: column; gap: 8px; }
+  .road-chip { display: flex; align-items: center; justify-content: space-between; gap: 10px; width: 100%; text-align: left; padding: 10px 12px; border: 1px solid var(--line); border-left: 3px solid var(--line-2); border-radius: 10px; background: rgba(255,255,255,.03); color: var(--ink); cursor: pointer; font-family: inherit; font-size: .85rem; transition: background .14s, border-color .14s; }
+  .road-chip:hover { background: rgba(255,255,255,.07); }
+  .road-chip.low { border-left-color: var(--orange); }
+  .road-chip.mid { border-left-color: var(--warn); }
+  .road-chip.ok { border-left-color: var(--good); }
+  .rc-name { font-weight: 500; }
+  .rc-score { font-variant-numeric: tabular-nums; color: var(--muted); font-weight: 700; flex: 0 0 auto; }
+  @media (max-width: 860px) { .roadmap { grid-template-columns: 1fr; } }
 </style>
 </head>
 <body>
@@ -379,6 +403,15 @@
     <ul class="ticks" id="r-focuslist"></ul>
   </div>
 
+  <div class="section-label">Recommended next steps</div>
+  <div class="panel"><ol class="nextsteps" id="r-nextsteps"></ol></div>
+
+  <div class="section-label">Your roadmap</div>
+  <div class="panel">
+    <p class="psub">The recommended sequence, left to right. Hover any theme to see what to put in place. The coloured edge shows how far each theme is from a solid, defined base, where orange needs the most attention.</p>
+    <div class="roadmap" id="r-roadmap"></div>
+  </div>
+
   <div class="section-label hidden" id="r-notes-label">Comments by theme</div>
   <div class="panel hidden" id="r-notes-panel"></div>
 
@@ -386,7 +419,7 @@
 </section>
 
 <div class="toast" id="toast">Link copied to clipboard</div>
-<div id="rec-pop" class="rec-pop hidden"></div>
+<div id="rec-pop" class="rec-pop hidden" onmouseenter="recKeep()" onmouseleave="recOut()"></div>
 
 <script>
 const LEVELS = ["Initial","Developing","Defined","Managed","Optimised"];
@@ -773,6 +806,9 @@ function renderResults(org, metaLine, answers) {
     tbody.appendChild(tr);
   });
 
+  renderNextSteps(rows);
+  renderRoadmap(cur);
+
   /* value equation, four-term detail */
   const veq = document.getElementById("r-veq"); veq.innerHTML = "";
   VALUE_TERMS.forEach(term => {
@@ -828,7 +864,10 @@ function renderResults(org, metaLine, answers) {
   }
   v += `Because value is intelligence applied to data, and the three multiply more than they add, the weakest one caps the value you can create. That is where effort has the most leverage right now. `;
   v += NEXT_STEP[c0.short];
-  document.getElementById("r-verdict").innerHTML = v;
+  const FORCE_THEMES = { "data":[0,1,2,3], "artificial intelligence":[6,7,9], "human intelligence":[5,8] };
+  const ft = FORCE_THEMES[c0.short]; let ti = ft[0]; ft.forEach(k=>{ if (cur[k] < cur[ti]) ti = k; });
+  const doNext = `<div class="verdict-next"><span class="vn-lab">Do this next</span> <b>${escapeHtml(THEMES[ti].key)}.</b> ${escapeHtml(RECS[ti])}</div>`;
+  document.getElementById("r-verdict").innerHTML = v + doNext;
 
   /* summary */
   const gap = overallTar - overallNow;
@@ -860,6 +899,26 @@ function renderNotes(answers) {
     np.innerHTML = notes.map(n=>`<div class="note-row"><div class="note-theme">${escapeHtml(n.name)}</div><div class="note-text">${escapeHtml(n.note)}</div></div>`).join("");
     nl.classList.remove("hidden"); np.classList.remove("hidden");
   } else { nl.classList.add("hidden"); np.classList.add("hidden"); }
+}
+function renderNextSteps(rows) {
+  const pick = rows.filter(r => (r.wave===1 && r.now<3) || r.gap>=0.5).slice(0,5);
+  const list = pick.length ? pick : rows.slice(0,3);
+  document.getElementById("r-nextsteps").innerHTML = list.map((r,n)=>
+    `<li><div class="ns-top"><span class="ns-num">${n+1}</span><span class="ns-name">${escapeHtml(r.name)}</span><span class="wavetag w${r.wave}">${WAVE_LABEL[r.wave]}</span></div><div class="ns-rec">${escapeHtml(RECS[r.idx])}</div></li>`
+  ).join("");
+}
+function renderRoadmap(cur) {
+  const WAVE_NAME = { 1:"Foundations", 2:"Make data usable", 3:"Scale AI" };
+  const host = document.getElementById("r-roadmap"); host.innerHTML = "";
+  [1,2,3].forEach(w => {
+    const items = THEMES.map((t,i)=>({ idx:i, name:t.key, now:cur[i], wave:WAVES[i] })).filter(x=>x.wave===w).sort((a,b)=>a.now-b.now);
+    const chips = items.map(x=>{
+      const st = x.now<2.5 ? "low" : x.now<3.5 ? "mid" : "ok";
+      return `<button class="road-chip ${st}" onmouseenter="recHover(event,${x.idx})" onmouseleave="recOut()" onclick="showRec(event,${x.idx})"><span class="rc-name">${escapeHtml(x.name)}</span><span class="rc-score">${x.now.toFixed(1)}</span></button>`;
+    }).join("");
+    host.insertAdjacentHTML("beforeend",
+      `<div class="road-stage"><div class="road-stage-head"><span class="road-badge">${w}</span><div><div class="road-wave">${WAVE_LABEL[w]}</div><div class="road-name">${WAVE_NAME[w]}</div></div></div><div class="road-chips">${chips}</div></div>`);
+  });
 }
 
 function tick(good) {
@@ -953,19 +1012,20 @@ function showSample() {
 function clampLvl(v){ return Math.max(1, Math.min(5, Math.round(v))); }
 
 /* ---- utilities ---- */
-function showRec(e, idx) {
-  e.stopPropagation();
+let recTimer = null;
+function recFill(idx) { document.getElementById("rec-pop").innerHTML = `<div class="rec-head">${escapeHtml(THEMES[idx].key)} <span class="wavetag w${WAVES[idx]}">${WAVE_LABEL[WAVES[idx]]}</span></div><div class="rec-body">${escapeHtml(RECS[idx])}</div>`; }
+function recPosition(el) {
   const pop = document.getElementById("rec-pop");
-  pop.innerHTML = `<div class="rec-head">${escapeHtml(THEMES[idx].key)} <span class="wavetag w${WAVES[idx]}">${WAVE_LABEL[WAVES[idx]]}</span></div><div class="rec-body">${escapeHtml(RECS[idx])}</div>`;
-  pop.classList.remove("hidden");
-  const r = e.currentTarget.getBoundingClientRect();
-  const w = pop.offsetWidth, vw = document.documentElement.clientWidth;
+  const r = el.getBoundingClientRect(), w = pop.offsetWidth, vw = document.documentElement.clientWidth;
   let left = r.left + window.scrollX;
   left = Math.min(left, window.scrollX + vw - w - 14);
   left = Math.max(window.scrollX + 10, left);
-  pop.style.left = left + "px";
-  pop.style.top = (r.bottom + window.scrollY + 8) + "px";
+  pop.style.left = left + "px"; pop.style.top = (r.bottom + window.scrollY + 8) + "px";
 }
+function showRec(e, idx) { e.stopPropagation(); if (recTimer) { clearTimeout(recTimer); recTimer=null; } recFill(idx); document.getElementById("rec-pop").classList.remove("hidden"); recPosition(e.currentTarget); }
+function recHover(e, idx) { if (recTimer) { clearTimeout(recTimer); recTimer=null; } recFill(idx); document.getElementById("rec-pop").classList.remove("hidden"); recPosition(e.currentTarget); }
+function recKeep() { if (recTimer) { clearTimeout(recTimer); recTimer=null; } }
+function recOut() { recTimer = setTimeout(()=> document.getElementById("rec-pop").classList.add("hidden"), 160); }
 function copyLink() {
   const t = location.href;
   if (navigator.clipboard) navigator.clipboard.writeText(t).then(toast).catch(toast); else toast();
